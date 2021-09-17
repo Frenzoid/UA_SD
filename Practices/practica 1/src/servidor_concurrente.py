@@ -1,9 +1,9 @@
 import socket
 import os
-from _thread import *
+from _thread import start_new_thread
 
 
-def threaded(c):
+def clientProcess(c):
     while True:
 
         command = str(c.recv(1024).decode('utf-8'))
@@ -38,7 +38,7 @@ def Main():
     while True:
         c, addr = s.accept()
         print('New connection incomming from:', addr[0], ':', addr[1])
-        start_new_thread(threaded, (c,))
+        start_new_thread(clientProcess, (c,))
 
 
 def run(command):
