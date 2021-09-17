@@ -17,7 +17,7 @@ def clientProcess(c):
 
         try:
             response = run(command)
-            print(response)
+            print("SAY: \n", response)
             c.send(response.encode('utf-8'))
         except ValueError:
             print(ValueError)
