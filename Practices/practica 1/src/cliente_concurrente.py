@@ -12,7 +12,6 @@ def Main():
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
-    
 
     while True:
 
@@ -20,13 +19,13 @@ def Main():
 
         if command == "exit":
             s.send(command.encode('utf-8'))
-            response = str(s.recv(1024).decode('utf-8'))
+            response = s.recv(1024).decode('utf-8')
 
             if "CLSC" in response:
                 break
 
         s.send(command.encode('utf-8'))
-        response = str(s.recv(1024).decode('utf-8'))
+        response = s.recv(1024).decode('utf-8')
         print(response)
 
     s.close()

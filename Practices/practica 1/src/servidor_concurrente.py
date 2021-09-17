@@ -7,7 +7,7 @@ from _thread import start_new_thread
 def clientProcess(c):
     while True:
 
-        command = str(c.recv(1024).decode('utf-8'))
+        command = c.recv(1024).decode('utf-8')
 
         if command == "exit":
             print("Closing Connection.")
