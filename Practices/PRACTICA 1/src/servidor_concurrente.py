@@ -19,15 +19,8 @@ def threaded(c):
             lock.release()
             break
 
-        if command == "stop":
-            print("Closing Server.")
-            c.send("CLSC002".encode('utf-8'))
-            c.close()
-            lock.release()
-            break
-
         try:
-            response = os.popen(command).read()
+            response = run(command)
             print(response)
             c.send(response.encode('utf-8'))
         except ValueError:
@@ -52,6 +45,10 @@ def Main():
         c, addr = s.accept()
         print('Connection incomming from:', addr[0], ':', addr[1])
         start_new_thread(threaded, (c,))
+
+
+def run(command):
+    return os.popen(command).read() or "Command: '" + command + "' executed."
 
 
 Main()

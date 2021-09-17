@@ -12,7 +12,7 @@ def Main():
 
         command = input('Insert command: ')
 
-        if command == "exit" or command == "stop":
+        if command == "exit":
             s.send(command.encode('utf-8'))
             response = str(s.recv(1024).decode('utf-8'))
 
