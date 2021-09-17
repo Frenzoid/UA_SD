@@ -1,10 +1,6 @@
-# import socket programming library
 import socket
 import os
-import threading
 from _thread import *
-
-lock = threading.Lock()
 
 
 def threaded(c):
@@ -16,7 +12,6 @@ def threaded(c):
             print("Closing Connection.")
             c.send("CLSC001".encode('utf-8'))
             c.close()
-            lock.release()
             break
 
         try:
@@ -41,14 +36,13 @@ def Main():
     print("Socket in listening mode!")
 
     while True:
-        lock.acquire()
         c, addr = s.accept()
-        print('Connection incomming from:', addr[0], ':', addr[1])
+        print('New connection incomming from:', addr[0], ':', addr[1])
         start_new_thread(threaded, (c,))
 
 
 def run(command):
-    return os.popen(command).read() or "Command: '" + command + "' executed."
+    return os.popen(command).read() or "Command: '" + command + "' executed. Yet, no output was returned."
 
 
 Main()

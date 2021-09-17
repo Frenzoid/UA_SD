@@ -1,6 +1,5 @@
 import socket
 
-
 def Main():
     host = 'localhost'
     port = 10111
