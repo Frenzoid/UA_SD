@@ -3,12 +3,12 @@ import sys
 
 def Main():
     
-    if len(sys.argv) < 2:
-        print("Port not specified!")
+    if len(sys.argv) < 3:
+        print("Missing parameters.")
         exit()
 
-    host = 'localhost'
-    port = int(sys.argv[1])
+    host = sys.argv[1]
+    port = int(sys.argv[2])
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
@@ -21,7 +21,7 @@ def Main():
             s.send(command.encode('utf-8'))
             response = s.recv(1024).decode('utf-8')
 
-            if "CLSC" in response:
+            if "EXIT" == response:
                 break
 
         s.send(command.encode('utf-8'))

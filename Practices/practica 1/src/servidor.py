@@ -11,7 +11,7 @@ def clientProcess(c):
 
         if command == "exit":
             print("Closing Connection.")
-            c.send("CLSC001".encode('utf-8'))
+            c.send("EXIT".encode('utf-8'))
             c.close()
             break
 
@@ -26,12 +26,12 @@ def clientProcess(c):
 
 def Main():
 
-    if len(sys.argv) < 2:
-        print("Port not specified!")
+    if len(sys.argv) < 3:
+        print("Missing parmeters!")
         exit()
 
-    host = 'localhost'
-    port = int(sys.argv[1])
+    host = sys.argv[1]
+    port = int(sys.argv[2])
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -40,7 +40,6 @@ def Main():
 
     s.listen(5)
     print("Socket in listening mode!")
-
 
     while True:
         c, addr = s.accept()
