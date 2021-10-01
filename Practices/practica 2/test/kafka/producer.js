@@ -10,18 +10,22 @@ let hola = { mensaje: 'hola', contador: 0 };
 const producer = kafka.producer({ allowAutoTopicCreation: true });
 const runProducer = async () => {
 
-  // Producing
+  // Conectamos el productor (esto puede dardar hasta 1 minuto)
   await producer.connect()
 
   // Cada segundo, manda produce un mensaje.
+  // setInterval(funcion a ejecutar, tiempo del intervalo en milisegundos que se va a ejecutar la primera funcion)
   setInterval(async () => {
 
     // Suma contador.
     hola.contador++;
 
-    // Produce mensaje.
+    // Produce mensaje con un topico en concreto.
     await producer.send({
-      topic: 'test-2',
+      // El topico.
+      topic: 'test',
+
+      // Array de mensjaes, por si quieres producir más de uno de golpe.
       messages: [
 
         // JSON.stringify se usa para convertir objetos a texto con formato JSON.
@@ -31,4 +35,5 @@ const runProducer = async () => {
   }, 1000);
 }
 
+// Arrancamos el productor.
 runProducer().catch(console.error)
