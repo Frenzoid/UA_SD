@@ -2,8 +2,8 @@ const { Server } = require("socket.io");
 const io = new Server();
 
 io.on("connection", (socket) => {
-    console.log("Hola");
-    
+    console.log("Se ha conectado el cliente con id:", socket.id);
+
     socket.on("event_name", (message) => {
         console.log(message);
     });
@@ -11,7 +11,7 @@ io.on("connection", (socket) => {
     // Haz algo cuando se desconecte.
     socket.on("me_cierro", (connection) => {
         console.log("Cliente:", socket.id, "se cierra");
-        socket.emit("cerrando")
+        socket.emit("cerrando");
         socket.disconnect();
     });
 });

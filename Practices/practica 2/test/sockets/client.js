@@ -2,7 +2,7 @@ const { io } = require("socket.io-client");
 const socket = io("http://localhost:9111");
 
 // Datos random.
-let datos = {data: "datos"}
+let datos = "hola";
 
 // Madamos un mensaje al servidor.
 socket.emit("event_name", datos);
