@@ -1,5 +1,5 @@
-const Aforo = require('./models/aforo');
-const User = require('./models/user');
+const Aforo = require('../models/aforo');
+const User = require('../models/user');
 
 
 async function createTablesFromModels() {
@@ -8,7 +8,7 @@ async function createTablesFromModels() {
     await User.sync({ force: true });
     await Aforo.sync({ force: true });
 
-    // await Aforo.create({ aforo: 10 });
+    await Aforo.create({ aforo: 10 });
 }
 
 module.exports = { createTablesFromModels };

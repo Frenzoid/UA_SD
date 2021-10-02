@@ -2,7 +2,7 @@
  * User model.
  */
 const Sequelize = require('sequelize');
-const sequelize = require('../bd-connector');
+const sequelize = require('../config/bd-connector');
 
 const User = sequelize.define('user', {
     id: {
