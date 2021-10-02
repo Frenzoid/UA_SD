@@ -58,8 +58,7 @@ async function start() {
 
                     // Mandamos al cliente el usuario registrado.
                     socket.emit("usuario_registrado", usuario)
-
-                    console.log("Usuario con datos:", datos, "registrado.");
+                    console.log("Usuario con datos:", usuario, "registrado.");
                 } catch (err) { console.error(err) }
             });
 
@@ -75,7 +74,9 @@ async function start() {
                     usuario.password = datos.password;
                     await usuario.save();
 
-                    socket.emit("usuario_actualizado", { usuario });
+                    // Mandamos al cliente el usuario actualizado.
+                    socket.emit("usuario_actualizado", usuario);
+                    console.log("Usuario con datos:", usuario, "actualizado.");
                 } catch (err) { console.log(err) }
             });
 
