@@ -10,6 +10,8 @@ io.on("connection", (socket) => {
     console.log("Cliente con id", socket.id, "conectado.");
 
     socket.on("manda_hola", (message) => {
+        console.log(io.sockets.sockets.get(socket.id));
+
         console.log("El cliente", socket.id, "ha mandado:", message);
         socket.emit("recibe_adios", "adios");
     });

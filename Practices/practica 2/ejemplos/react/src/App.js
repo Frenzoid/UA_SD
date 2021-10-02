@@ -24,6 +24,8 @@ class App extends Component {
 
   }
 
+
+
   updateCell = (i, j) => {
     let matriz = this.state.matriz;
     matriz[i][j].color = "blue";
@@ -34,7 +36,6 @@ class App extends Component {
     return (
       <BrowserRouter >
         <Switch>
-
           <Route path="/aaaa">
             <Link to="/"> aaaaaaaaaaaaa </Link>
             <div>
