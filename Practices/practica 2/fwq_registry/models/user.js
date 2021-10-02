@@ -29,11 +29,11 @@ const User = sequelize.define('user', {
     },
     x_destino: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     y_destino: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 });
 
