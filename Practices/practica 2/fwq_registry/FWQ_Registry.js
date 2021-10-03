@@ -1,24 +1,24 @@
-const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
-    cors: {
-        origin: "*",
-    }
-});
+
+const { server, io } = require("./socket");
+const sequelize = require('./config/bd-connector');
+
+const Aforo = require("./models/aforo");
+
+const runDBPreparations = require('./config/db-functions');
+const bindSocketFunctions = require("./controller");
 
 const puerto = Number(process.argv[2]);
-const sequelize = require('./config/bd-connector');
-const { createTablesFromModels } = require('./config/db-functions');
-const Aforo = require("./models/aforo");
-const User = require("./models/user");
-
-let usuarios = [];
 
 async function start() {
     try {
+        // Nos logeamos en el servidor de bases de datos.
         await sequelize.authenticate();
-        console.log(`Sequelize: Successuflly authenticated.`);
+        console.log("Sequelize: Successuflly authenticated.");
 
-        await createTablesFromModels();
+        // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
+        await runDBPreparations();
+
+        // Pillamos el aforo, si no hay nada significa que el FWQ_Engine aún no ha arrancado.
         let aforo = await Aforo.findOne();
         while (!aforo) {
             console.log("Esperando 5s a que FWQ_ENGINE genere AFORO.");
@@ -27,80 +27,27 @@ async function start() {
         }
         aforo = aforo.aforo;
 
+        // Por cada conexion...
         io.on("connection", (socket) => {
+            console.log("Conexion entrante desde direccion:", socket.handshake.address, "con id de sesion:", socket.id);
 
-            console.log("Se ha recibido una conexion con id:", socket.id);
-
-            socket.on("registrar_usuario", async (datos) => {
-                if (!datos.name || !datos.password) {
-                    socket.emit("campos_faltates", "Faltan datos!");
-                    return;
-                }
-
-                try {
-                    const aforoActual = await User.count();
-                    console.log(aforoActual);
-
-                    if (aforoActual >= aforo) {
-                        socket.emit("aforo_maximo", "Se ha alcanzado el aforo máximo!");
-                        return;
-                    }
-
-                    const usuario = await User.create(
-                        {
-                            name: datos.name,
-                            password: datos.password,
-                            x_actual: 10,
-                            y_actual: 10
-                        });
-
-                    usuarios[socket.id] = usuario.id;
-
-                    // Mandamos al cliente el usuario registrado.
-                    socket.emit("usuario_registrado", usuario)
-                    console.log("Usuario con datos:", usuario, "registrado.");
-                } catch (err) { console.error(err) }
-            });
-
-            socket.on("actualizar_usuario", async (datos) => {
-                if (!datos.name || !datos.password) {
-                    socket.emit("campos_faltates", "Faltan datos!");
-                    return;
-                }
-
-                try {
-                    let usuario = await User.findByPk(usuarios[socket.id]);
-                    usuario.name = datos.name;
-                    usuario.password = datos.password;
-                    await usuario.save();
-
-                    // Mandamos al cliente el usuario actualizado.
-                    socket.emit("usuario_actualizado", usuario);
-                    console.log("Usuario con datos:", usuario, "actualizado.");
-                } catch (err) { console.log(err) }
-            });
-
-            socket.on("disconnect", async () => {
-                console.log("Desconectando", socket.id)
-                if (usuarios[socket.id] != undefined) {
-                    await User.destroy({ where: { id: usuarios[socket.id] } })
-                    delete usuarios[socket.id];
-                }
-            });
-
+            // Asignamos funcionalidades al socket.
+            bindSocketFunctions(socket, aforo);
         });
 
-        httpServer.listen(puerto);
+        // Arrancamos el servidor.
+        server.listen(puerto);
         console.log("Servidor escuchando en el puerto:", puerto)
 
     } catch (err) { console.error(err) }
 }
 
-
+// Una funcion que hace esperar ciertos ms.
 function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
     });
 }
 
+// Arrancamos
 start();

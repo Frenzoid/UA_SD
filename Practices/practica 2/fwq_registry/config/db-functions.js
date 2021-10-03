@@ -2,7 +2,7 @@ const Aforo = require('../models/aforo');
 const User = require('../models/user');
 
 
-async function createTablesFromModels() {
+async function runDBPreparations() {
 
     // Sync all models.
     await User.sync({ force: true });
@@ -11,4 +11,4 @@ async function createTablesFromModels() {
     await Aforo.create({ aforo: 10 });
 }
 
-module.exports = { createTablesFromModels };
+module.exports = runDBPreparations;
