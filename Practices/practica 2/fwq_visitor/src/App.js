@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import { socket } from "./configs/socket";
 
 import Register from './components/register';
@@ -10,13 +10,15 @@ function App() {
   const [user, setUser] = useState({});
   const [socketConnected, setSocketConnected] = useState(false);
 
+  const history = useHistory();
+
   useEffect(() => {
     bindSokets();
   }, []);
 
   let bindSokets = () => {
     socket.on("connect", () => { setSocketConnected(true) });
-    socket.on("connect_error", () => { setSocketConnected(false) });
+    socket.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") history.push("/") });
   };
 
   return (

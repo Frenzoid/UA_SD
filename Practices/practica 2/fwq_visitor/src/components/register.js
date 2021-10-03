@@ -11,7 +11,7 @@ function Register(props) {
 
     useEffect(() => {
         // Si el usuario ya esta registrado, no le permitimos acceder a esta página.
-        if (user.id)
+        if (user.id && socketConnected)
             history.push("/map");
 
         bindSokets();
