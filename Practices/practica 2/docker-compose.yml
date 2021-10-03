@@ -40,3 +40,11 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+
+  nginx:
+    image: 'nginx:latest'
+    container_name: 'fwq_visitor'
+    ports:
+      - 80:80
+    volumes:
+      - ./fwq_visitor/build:/usr/share/nginx/html/
