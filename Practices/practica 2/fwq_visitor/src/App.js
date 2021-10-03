@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch, Route } from "react-router-dom";
 import { socket } from "./configs/socket";
 
@@ -8,13 +8,23 @@ import Edit from './components/edit'
 
 function App() {
   const [user, setUser] = useState({});
-  const [socketLoaded, setSL] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  useEffect(() => {
+    bindSokets();
+  }, []);
+
+  let bindSokets = () => {
+    socket.on("connect", () => { setSocketConnected(true) });
+    socket.on("connect_error", () => { setSocketConnected(false) });
+  };
 
   return (
     <Switch>
 
       <Route path="/map">
         <Map
+          socketConnected={socketConnected}
           socket={socket}
           user={user}
           setUser={setUser}
@@ -23,6 +33,7 @@ function App() {
 
       <Route path="/edit">
         <Edit
+          socketConnected={socketConnected}
           socket={socket}
           user={user}
           setUser={setUser}
@@ -34,8 +45,7 @@ function App() {
         {/* Así es como se pasan variables a los componentes hijos,
         los hijos los reciben por parametro en la variable "props" */}
         <Register
-          socketLoaded={socketLoaded}
-          setSL={setSL}
+          socketConnected={socketConnected}
           socket={socket}
           user={user}
           setUser={setUser}

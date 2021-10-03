@@ -4,21 +4,15 @@ import { useHistory } from "react-router-dom";
 function Register(props) {
     const history = useHistory();
     const socket = props.socket;
+    const socketConnected = props.socketConnected;
 
     const [user, setUser] = [props.user, props.setUser];
-    const [socketPreviuslyLoaded, setSL] = [props.socketLoaded, props.setSL];
-
     const [errorMsg, setErrorMsg] = useState("");
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Si el usuario ya esta registrado, no le permitimos acceder a esta página.
         if (user.id)
             history.push("/map");
-
-        // No muestres el gif de "cargando" si has cargado el socket previamente.
-        if (socketPreviuslyLoaded)
-            setLoading(false);
 
         bindSokets();
     }, []);
@@ -30,8 +24,6 @@ function Register(props) {
         });
 
         socket.on("error_registry", (err) => { setErrorMsg(err) });
-        socket.on("connect", () => { setLoading(false); setSL(true); setErrorMsg(""); });
-        socket.on("connect_error", () => { setLoading(false); setSL(true); setErrorMsg("No hay conexión con FWQ_Registry, intentando reconexión.") });
     };
 
     let registrarse = (e) => {
@@ -43,13 +35,10 @@ function Register(props) {
         socket.emit("registrar_usuario", user);
     }
 
+
     return (
         <div className="container">
-
-            <div hidden={!loading} width="100%" className="d-flex flex-row justify-content-center">
-                <img hidden={!loading} alt="loading img" src={"https://codemyui.com/wp-content/uploads/2017/11/gradient-colour-slide-puzzle-style-loading-animation.gif"} />
-            </div>
-            <div hidden={loading}>
+            <div>
                 <h1 className="text-center mt-3">
                     ¡ Hola {user.name} !
                 </h1>
@@ -57,28 +46,30 @@ function Register(props) {
                 <form>
                     <div className="form-group p-0 mb-3">
                         <label>Name</label>
-                        <input disabled={errorMsg.includes("conexión") ? true : false} onChange={(e) => { setUser({ name: e.target.value, password: user.password }) }} className="form-control" placeholder="Introduce tu name de user"></input>
+                        <input disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.name = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu name de user"></input>
                     </div>
                     <div className="form-check p-0 mb-3">
                         <label>Password</label>
-                        <input disabled={errorMsg.includes("conexión") ? true : false} onChange={(e) => { setUser({ name: user.name, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                        <input disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.password = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
-                    <button onClick={registrarse} disabled={errorMsg.includes("conexión") ? true : false} className="btn btn-primary">
+                    <button onClick={registrarse} disabled={!socketConnected ? true : false} className="btn btn-primary">
                         Registrarse!
                     </button>
                 </form>
 
-                {!errorMsg ? "" :
+                {!errorMsg && socketConnected ? "" :
                     <div style={{ width: "100%" }} className="card card-header bg-danger text-white text-center mt-3">
-                        {errorMsg}
-                        <div hidden={!errorMsg.includes("conexión") ? true : false} class="text-center mt-2">
-                            <div class="spinner-border">
-                                <span span class="sr-only"></span>
+
+                        {!socketConnected ? "Se ha pedido la conexion con el servidor, reconectando..." : errorMsg}
+
+                        <div hidden={socketConnected ? true : false} className="text-center mt-2">
+                            <div className="spinner-border">
+                                <span className="sr-only"></span>
                             </div>
                         </div>
                     </div>
                 }
-            </div>
+            </div >
         </div >
     )
 

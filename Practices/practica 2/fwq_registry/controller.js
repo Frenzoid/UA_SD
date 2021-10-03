@@ -3,7 +3,7 @@ const User = require("./models/user");
 // Nuestro mapeo de socket => usuarios conectados.
 let usuarios = [];
 
-function bindSocketFunctions(socket, aforo) {
+function bindSocketFunctions(io, socket, aforo) {
 
     // Registrar usuario.
     socket.on("registrar_usuario", async (received) => {
@@ -69,13 +69,19 @@ function bindSocketFunctions(socket, aforo) {
     });
 
 
-    // Desloggeamos usuario.
+    // Usuario sale manualmente.
     socket.on("desregistrar_usuario", async () => {
         if (usuarios[socket.id] != undefined) {
-            await User.destroy({ where: { id: usuarios[socket.id] } })
+            await User.destroy({ where: { id: usuarios[socket.id] } });
+
+            // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
+            io.emit("usuario_desconectado", usuarios[socket.id]);
             delete usuarios[socket.id];
         }
+
         console.log("Desregistrado", socket.id)
+
+        // Emitimos un evento de vuelta, para que la aplicacion frontend proceda a mandarlo al home.
         socket.emit("usuario_desregistrado", "Usuario desregistrado!");
     });
 
@@ -83,9 +89,13 @@ function bindSocketFunctions(socket, aforo) {
     // Usuario pierde la conexion.
     socket.on("disconnect", async () => {
         if (usuarios[socket.id] != undefined) {
-            await User.destroy({ where: { id: usuarios[socket.id] } })
+            await User.destroy({ where: { id: usuarios[socket.id] } });
+
+            // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
+            io.emit("usuario_desconectado", usuarios[socket.id]);
             delete usuarios[socket.id];
         }
+
         console.log("Desconectando", socket.id)
     });
 }

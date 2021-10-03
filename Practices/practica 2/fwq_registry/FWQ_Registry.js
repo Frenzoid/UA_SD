@@ -1,4 +1,3 @@
-
 const { server, io } = require("./socket");
 const sequelize = require('./config/bd-connector');
 
@@ -10,6 +9,9 @@ const bindSocketFunctions = require("./controller");
 const puerto = Number(process.argv[2]);
 
 async function start() {
+    if (!puerto)
+        throw ("No se ha especificado el puerto.")
+
     try {
         // Nos logeamos en el servidor de bases de datos.
         await sequelize.authenticate();
@@ -32,7 +34,7 @@ async function start() {
             console.log("Conexion entrante desde direccion:", socket.handshake.address, "con id de sesion:", socket.id);
 
             // Asignamos funcionalidades al socket.
-            bindSocketFunctions(socket, aforo);
+            bindSocketFunctions(io, socket, aforo);
         });
 
         // Arrancamos el servidor.
@@ -50,4 +52,4 @@ function sleep(ms) {
 }
 
 // Arrancamos
-start();
+start().catch((err) => console.error(err));
