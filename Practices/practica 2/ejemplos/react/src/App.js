@@ -23,7 +23,8 @@ function App() {
 
   let updateCell = (i, j) => {
     console.log(i, j);
-    matrix[i][j].color = "blue"; setMatrix([...matrix]);
+    matrix[i][j].color = "blue";
+    setMatrix([...matrix]);
   }
 
   return (
