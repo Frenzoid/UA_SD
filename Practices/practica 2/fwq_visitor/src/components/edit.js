@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useHistory } from "react-router-dom";
 
 function Edit(props) {
@@ -8,6 +8,8 @@ function Edit(props) {
 
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
+
+    const currentUserName = useRef(user.name);
 
     useEffect(() => {
         bindSokets();
@@ -24,7 +26,6 @@ function Edit(props) {
 
     let registrarse = (e) => {
         e.preventDefault();
-        console.log(user)
 
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
@@ -37,7 +38,7 @@ function Edit(props) {
         <div className="container">
             <div>
                 <h1 className="text-center mt-3">
-                    ¡ Editando usuario !
+                    ¡ Editando {currentUserName.current} !
                 </h1>
 
                 <form>
