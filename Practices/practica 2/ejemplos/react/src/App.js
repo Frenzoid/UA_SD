@@ -1,83 +1,62 @@
-import './App.css';
-import { Component } from "react";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import Square from "./square";
+import { useEffect, useState } from "react";
 
-class App extends Component {
-  constructor() {
-    super();
+function App() {
+  const [matrix, setMatrix] = useState([]);
 
-    this.n = 20;
-    this.matriz = [];
+  useEffect(() => {
+    const n = 20;
 
-    for (let i = 0; i < this.n; i++) {
-      this.matriz[i] = [];
-      for (let j = 0; j < this.n; j++) {
-        this.matriz[i][j] = { color: "red", coords: [i, j] }
+    for (let i = 0; i < n; i++) {
+      matrix[i] = [];
+      for (let j = 0; j < n; j++) {
+        matrix[i][j] = { color: "red", coords: [i, j] }
       }
     }
 
-    this.state = {
-      matriz: this.matriz,
-      usuario: "lol"
-    }
+    // Could also use
+    // Array(n).fill(0).map(_ => new Array(n).fill(0).map(_ => ({ color: "red" })))
+    // But its disgusting AF.
 
+    setMatrix([...matrix]);
+
+  }, [])
+
+  let updateCell = (i, j) => {
+    console.log(i, j);
+    matrix[i][j].color = "blue"; setMatrix([...matrix]);
   }
 
+  return (
 
+    <div className="container">
 
-  updateCell = (i, j) => {
-    let matriz = this.state.matriz;
-    matriz[i][j].color = "blue";
-    this.setState({ matriz });
-  }
+      {/* Renders all squares fine! */}
+      {!matrix ? "" : matrix.map((i, ipos) => {
 
-  render() {
-    return (
-      <BrowserRouter >
-        <Switch>
-          <Route path="/aaaa">
-            <Link to="/"> aaaaaaaaaaaaa </Link>
-            <div>
-              AAAAAAAAAA
-            </div>
-          </Route>
+        return (
+          <div key={ipos} className="d-flex flex-row wrap">
 
-          <Route path="/">
-            <Link to="/aaaa"> aaaaaaaaaaaaa </Link>
+            {i.map((j, jpos) => {
+              return (
 
-            <div className="container">
-              <h1>{this.state.usuario}</h1>
-              <input onChange={(event) => { this.usuario = event.target.value; this.setState({ usuario: this.usuario }) }}>
-              </input>
-              {this.matriz.map((i, ix) => {
-                return (
-                  <div key={ix} className="d-flex flex-row wrap">
+                <div
+                  style={{ minWidth: "5%", minHeight: "50px", textAlign: "center", color: "white", backgroundColor: matrix[ipos][jpos].color }}
+                  key={ipos + ", " + jpos}
+                  onClick={() => { updateCell(ipos, jpos) }}
+                >
+                  {ipos + ", " + jpos}
+                </div>
 
-                    {i.map((j, jx) => {
-                      return (
+              )
+            })}
 
-                        <Square
-                          key={ix + ", " + jx}
-                          i={ix}
-                          j={jx}
-                          updateCell={this.updateCell}
-                          color={this.state.matriz[ix][jx].color}
-                        ></Square>
+          </div>
+        )
 
-                      )
-                    })}
+      })}
 
-                  </div>
-                )
-              })}
-            </div>
-          </Route>
-
-        </Switch>
-      </BrowserRouter>
-    )
-  }
+    </div>
+  )
 }
 
 export default App;
