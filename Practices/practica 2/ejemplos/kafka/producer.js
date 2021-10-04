@@ -3,7 +3,7 @@ const { Kafka } = require('kafkajs')
 const kafka = new Kafka({
   clientId: 'producer',
   brokers: ['oldbox.cloud:9092']
-})
+});
 
 let hola = { mensaje: 'hola', contador: 0 };
 
@@ -36,4 +36,4 @@ const runProducer = async () => {
 }
 
 // Arrancamos el productor.
-runProducer().catch(console.error)
+runProducer().catch((e) => { console.error(e); runProducer(); });
