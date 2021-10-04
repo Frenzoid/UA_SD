@@ -30,7 +30,6 @@ function App() {
 
     <div className="container">
 
-      {/* Renders all squares fine! */}
       {matrix.map((i, ipos) => {
 
         return (
