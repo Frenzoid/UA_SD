@@ -6,7 +6,6 @@ function Map(props) {
     const socket = props.socket;
 
     const [user, setUser] = [props.user, props.setUser];
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Si el usuario no esta registrado, no le permitimos acceder a esta página.
@@ -14,7 +13,6 @@ function Map(props) {
             history.push("/");
 
         bindSokets();
-        setLoading(false);
     }, []);
 
     let bindSokets = () => {
@@ -29,14 +27,15 @@ function Map(props) {
 
     return (
         <div className="container">
+            <div className="text-center my-3">
+                <button onClick={desregistrar} className="btn btn-danger m-2"> Salir del parque.</button>
+                <button onClick={(e) => { e.preventDefault(); history.push("/edit") }} className="btn btn-primary m-2"> Editar usuario.</button>
+            </div>
 
-            <div hidden={!loading} width="100%" className="d-flex flex-row justify-content-center">
-                <img hidden={!loading} alt="loading img" src={"https://codemyui.com/wp-content/uploads/2017/11/gradient-colour-slide-puzzle-style-loading-animation.gif"} />
-            </div>
-            <div hidden={loading} className="text-center mt-5">
-                <button onClick={desregistrar} className="btn btn-danger"> Salir del parque.</button>
-            </div>
-        </div >
+            <code>
+                {JSON.stringify(user)}
+            </code>
+        </div>
     )
 
 }

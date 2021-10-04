@@ -1,4 +1,4 @@
 import io from "socket.io-client";
-import { dirRegistros } from "./parametros";
+import { dirFWQRegistry } from "./parametros";
 
-export const socket = io(dirRegistros);;
+export const socket = io(dirFWQRegistry, { timeout: 1000 });

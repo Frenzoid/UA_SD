@@ -34,7 +34,7 @@ function bindSocketFunctions(io, socket, aforo) {
 
             // Mandamos al cliente el usuario registrado.
             socket.emit("usuario_registrado", user)
-            console.log("Usuario", user.name, "registrado.");
+            console.log("Usuario", user.id, ":", user.name, "registrado. | Aforo:", aforoActual + 1, "/", aforo);
 
             if (aforoActual + 1 == aforo)
                 console.log("Aforo máximo alcanzado.");
@@ -47,9 +47,9 @@ function bindSocketFunctions(io, socket, aforo) {
 
 
     // Actualizamos usuario.
-    socket.on("actualizar_usuario", async (received) => {
+    socket.on("editar_usuario", async (received) => {
         if (!received.name || !received.password) {
-            socket.emit("campos_faltates", "Faltan datos!");
+            socket.emit("error_registry", "Faltan datos!");
             return;
         }
 
@@ -60,8 +60,8 @@ function bindSocketFunctions(io, socket, aforo) {
             await user.save();
 
             // Mandamos al cliente el usuario actualizado.
-            socket.emit("usuario_actualizado", user);
-            console.log("Usuario", user.name, "actualizado.");
+            socket.emit("usuario_editado", user);
+            console.log("Usuario", user.id, ":", received.name, "actualizado.");
         } catch (err) {
             console.log(err);
             socket.emit("error_registry", "Se ha producido un error interno en FWQ_Registry.");

@@ -28,11 +28,11 @@ function Register(props) {
 
     let registrarse = (e) => {
         e.preventDefault();
-        console.log(user)
+
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
-
-        socket.emit("registrar_usuario", user);
+        else
+            socket.emit("registrar_usuario", user);
     }
 
 
@@ -46,11 +46,11 @@ function Register(props) {
                 <form>
                     <div className="form-group p-0 mb-3">
                         <label>Name</label>
-                        <input disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.name = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu name de user"></input>
+                        <input disabled={!socketConnected ? true : false} onChange={(e) => { setUser({ ...user, name: e.target.value }); }} className="form-control" placeholder="Introduce tu name de user"></input>
                     </div>
                     <div className="form-check p-0 mb-3">
                         <label>Password</label>
-                        <input disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.password = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                        <input disabled={!socketConnected ? true : false} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
                     <button onClick={registrarse} disabled={!socketConnected ? true : false} className="btn btn-primary">
                         Registrarse!

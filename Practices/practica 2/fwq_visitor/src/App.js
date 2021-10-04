@@ -7,7 +7,7 @@ import Map from './components/map';
 import Edit from './components/edit'
 
 function App() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({ name: "", password: "" });
   const [socketConnected, setSocketConnected] = useState(false);
 
   const history = useHistory();

@@ -9,8 +9,6 @@ function Edit(props) {
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
 
-    const prevUser = { ...user };
-
     useEffect(() => {
         bindSokets();
     }, []);
@@ -27,10 +25,11 @@ function Edit(props) {
     let registrarse = (e) => {
         e.preventDefault();
         console.log(user)
+
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
-
-        socket.emit("editar_usuario", user);
+        else
+            socket.emit("editar_usuario", user);
     }
 
 
@@ -38,20 +37,23 @@ function Edit(props) {
         <div className="container">
             <div>
                 <h1 className="text-center mt-3">
-                    ¡ Editando {prevUser.name} !
+                    ¡ Editando usuario !
                 </h1>
 
                 <form>
                     <div className="form-group p-0 mb-3">
                         <label>Name</label>
-                        <input value={prevUser.name} disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.name = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu name de user"></input>
+                        <input value={user.name} disabled={!socketConnected ? true : false} onChange={(e) => { setUser({ ...user, name: e.target.value }) }} className="form-control" placeholder="Introduce tu name de user"></input>
                     </div>
                     <div className="form-check p-0 mb-3">
                         <label>Password</label>
-                        <input value={prevUser.password} disabled={!socketConnected ? true : false} onChange={(e) => { let updatedUser = { ...user }; updatedUser.name = e.target.value; setUser(updatedUser); }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                        <input value={user.password} disabled={!socketConnected ? true : false} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
-                    <button onClick={registrarse} disabled={!socketConnected ? true : false} className="btn btn-primary">
-                        Registrarse!
+                    <button onClick={registrarse} disabled={!socketConnected ? true : false} className="btn btn-success me-2">
+                        Actualizar datos!
+                    </button>
+                    <button onClick={(e) => { e.preventDefault(); history.push("/map"); }} disabled={!socketConnected ? true : false} className="btn btn-primary ms-2">
+                        Volver al mapa.
                     </button>
                 </form>
 
