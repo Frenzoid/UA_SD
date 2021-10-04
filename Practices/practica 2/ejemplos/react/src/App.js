@@ -31,7 +31,7 @@ function App() {
     <div className="container">
 
       {/* Renders all squares fine! */}
-      {!matrix ? "" : matrix.map((i, ipos) => {
+      {matrix.map((i, ipos) => {
 
         return (
           <div key={ipos} className="d-flex flex-row wrap">
