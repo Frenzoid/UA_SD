@@ -5,7 +5,7 @@ let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect
 let producer = new kafka.Producer(client);
 
 let payloads = [
-  { topic: 'test', messages: JSON.stringify({ data: "hola" }), partition: 0 },
+  { topic: 'test', messages: JSON.stringify({ data: 10 }), partition: 0 },
 ];
 
 
