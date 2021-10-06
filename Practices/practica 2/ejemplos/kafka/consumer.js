@@ -1,40 +1,19 @@
-const { Kafka } = require('kafkajs')
+let kafka = require('kafka-node');
 
-const kafka = new Kafka({
-    // Si se tiene más de una instancia del consumidor, no importa que tengan la misma ID.
-    clientId: 'consumer',
-    brokers: ["oldbox.cloud:9092"],
-    requestTimeout: 3000,
-    retry: {
-        maxRetryTime: 3000,
+let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect: true });
+
+let consumer = new kafka.Consumer(
+    client,
+    [
+        { topic: 'test', partition: 0 },
+    ],
+    {
+        autoCommit: true,
     }
-})
+);
 
-// Si se quiere tener mas de un consumidor para las mismas particiones, cada consumidor
-//   deberá tener un groupID unico, en caso contrario, se repartiran los mensajes a
-//   consumir.
-const consumer = kafka.consumer({ groupId: 'g1', allowAutoTopicCreation: true });
+consumer.on('message', (message) => {
+    console.log(JSON.parse(message.value));
+});
 
-const runConsumer = async () => {
-
-    // Conectamos el consumidor (esto puede dardar hasta 1 minuto)
-    await consumer.connect()
-
-    // Nos subscribimos a un topico
-    await consumer.subscribe({ topic: 'test', fromBeginning: false })
-
-    // Empezamos a consumir los mensajes de los topic subscritos.
-    await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-
-            // JSON.parse se usa para convertir texto en formato JSON a objetos.
-            const msg = JSON.parse(message.value);
-            console.log(msg)
-        },
-        isRunning: async (s) => {
-            console.log(s)
-        }
-    })
-}
-
-runConsumer().catch((e) => console.error(e))
+consumer.on('error', (err) => { console.log(err) })

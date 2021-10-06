@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 function App() {
   const [matrix, setMatrix] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
+
     const n = 20;
 
     for (let i = 0; i < n; i++) {

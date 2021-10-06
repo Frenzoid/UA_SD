@@ -1,39 +1,22 @@
-const { Kafka } = require('kafkajs')
+let kafka = require('kafka-node');
 
-const kafka = new Kafka({
-  clientId: 'producer',
-  brokers: ['oldbox.cloud:9092']
+let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect: true });
+
+let producer = new kafka.Producer(client);
+
+let payloads = [
+  { topic: 'test', messages: JSON.stringify({ data: "hola" }), partition: 0 },
+];
+
+
+producer.on('ready', () => {
+
+  setInterval(() => {
+    producer.send(payloads, (err, data) => {
+      console.log(data);
+    });
+  }, 2000);
+
 });
 
-let hola = { mensaje: 'hola', contador: 0 };
-
-const producer = kafka.producer({ allowAutoTopicCreation: true });
-const runProducer = async () => {
-
-  // Conectamos el productor (esto puede dardar hasta 1 minuto)
-  await producer.connect()
-
-  // Cada segundo, manda produce un mensaje.
-  // setInterval(funcion a ejecutar, tiempo del intervalo en milisegundos que se va a ejecutar la primera funcion)
-  setInterval(async () => {
-
-    // Suma contador.
-    hola.contador++;
-
-    // Produce mensaje con un topico en concreto.
-    await producer.send({
-      // El topico.
-      topic: 'test',
-
-      // Array de mensjaes, por si quieres producir más de uno de golpe.
-      messages: [
-
-        // JSON.stringify se usa para convertir objetos a texto con formato JSON.
-        { value: JSON.stringify(hola) },
-      ],
-    })
-  }, 1000);
-}
-
-// Arrancamos el productor.
-runProducer().catch((e) => { console.error(e); runProducer(); });
+producer.on('error', (err) => { console.log(err) })
