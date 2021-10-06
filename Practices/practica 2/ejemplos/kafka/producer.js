@@ -1,11 +1,11 @@
 let kafka = require('kafka-node');
 
-let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect: true });
+let client = new kafka.KafkaClient({ kafkaHost: 'localhost:9092' });
 
 let producer = new kafka.Producer(client);
 
 let payloads = [
-  { topic: 'test', messages: JSON.stringify({ data: 10 }), partition: 0 },
+  { topic: 'test', messages: JSON.stringify({ hola: "mundo"}), partition: 0 },
 ];
 
 
