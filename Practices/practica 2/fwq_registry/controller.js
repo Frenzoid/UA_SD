@@ -2,23 +2,24 @@ const User = require("./models/user");
 
 // Nuestro mapeo de socket => usuarios conectados.
 let usuarios = [];
+let aforoActual = 0;
 
 function bindSocketFunctions(io, socket, aforo) {
 
     // Registrar usuario.
     socket.on("registrar_usuario", async (received) => {
+
+        if (aforoActual + 1 >= aforo) {
+            socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
+            return;
+        } else aforoActual++;
+
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
             return;
         }
 
         try {
-            const aforoActual = await User.count();
-
-            if (aforoActual >= aforo) {
-                socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
-                return;
-            }
 
             const user = await User.create(
                 {
@@ -34,9 +35,9 @@ function bindSocketFunctions(io, socket, aforo) {
 
             // Mandamos al cliente el usuario registrado.
             socket.emit("usuario_registrado", user)
-            console.log("Usuario", user.id, ":", user.name, "registrado. | Aforo:", aforoActual + 1, "/", aforo);
+            console.log("Usuario", user.id, ":", user.name, "registrado. | Aforo:", aforoActual, "/", aforo);
 
-            if (aforoActual + 1 == aforo)
+            if (aforoActual == aforo)
                 console.log("Aforo máximo alcanzado.");
 
         } catch (err) {
@@ -77,6 +78,7 @@ function bindSocketFunctions(io, socket, aforo) {
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
             io.emit("usuario_desconectado", usuarios[socket.id]);
             delete usuarios[socket.id];
+            aforoActual--;
         }
 
         console.log("Desregistrado", socket.id)
@@ -94,6 +96,7 @@ function bindSocketFunctions(io, socket, aforo) {
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
             io.emit("usuario_desconectado", usuarios[socket.id]);
             delete usuarios[socket.id];
+            aforoActual--;
         }
 
         console.log("Desconectando", socket.id)
