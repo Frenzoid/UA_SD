@@ -6,7 +6,7 @@ const Aforo = require("./models/aforo");
 const runDBPreparations = require('./config/db-functions');
 const bindSocketFunctions = require("./controller");
 
-const puerto = Number(process.argv[2]);
+const puerto = Number(process.env.PORT || process.argv[2]);
 
 async function start() {
     if (!puerto)
