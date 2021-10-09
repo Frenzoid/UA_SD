@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 function Map(props) {
     const history = useHistory();
@@ -7,12 +7,15 @@ function Map(props) {
 
     const [user, setUser] = [props.user, props.setUser];
     const [matrix, setMatrix] = useState([]);
+
     let atracciones;
+    let inter;
 
     useEffect(() => {
         // Si el usuario no esta registrado, no le permitimos acceder a esta página.
-        if (!user.id)
+        if (!user.id) {
             history.push("/");
+        }
 
         bindSokets();
 
@@ -26,29 +29,48 @@ function Map(props) {
             }
         }
 
-        atracciones = [{ coords: [2, 2] }, { coords: [2, 17] }, { coords: [17, 2] }, { coords: [17, 17] }]
-        atracciones.forEach((attr) => {
-            matrix[attr.coords[0]][attr.coords[1]].color = "purple";
-        });
+        atracciones = [{ coords: [3, 3] }, { coords: [3, 18] }, { coords: [18, 3] }, { coords: [18, 18] }]
 
         setMatrix([...matrix]);
 
-
-        setInterval(() => {
-            console.log(user);
+        inter = setInterval(() => {
 
             if (user.x_actual == user.x_destino && user.y_actual == user.y_destino) {
+                redibujaCasilla(user.x_actual, user.y_actual, user.x_actual, user.y_actual);
                 seleccionaAtraccion();
-            }
+            } else siguientePosicion();
 
-        }, 1000)
+            atracciones.forEach((attr) => {
+                redibujaAtracciones(attr.coords[0], attr.coords[1])
+            });
 
+        }, 500);
+
+        return () => { clearInterval(inter) }
 
     }, []);
 
     let siguientePosicion = () => {
+        let x_siguiente, y_siguiente;
 
-        redibujaCasilla(user.x_actual, user.y_actual);
+        if (user.x_actual > user.x_destino)
+            x_siguiente = user.x_actual - 1;
+        else if (user.x_actual < user.x_destino)
+            x_siguiente = user.x_actual + 1;
+        else x_siguiente = user.x_actual;
+
+        if (user.y_actual > user.y_destino)
+            y_siguiente = user.y_actual - 1;
+        else if (user.y_actual < user.y_destino)
+            y_siguiente = user.y_actual + 1;
+        else y_siguiente = user.y_actual;
+
+        redibujaCasilla(user.x_actual, user.y_actual, x_siguiente, y_siguiente);
+
+        user.x_actual = x_siguiente;
+        user.y_actual = y_siguiente;
+
+        setUser({ ...user });
     }
 
     let randomIntFromInterval = (min, max) => {
@@ -59,13 +81,21 @@ function Map(props) {
     let seleccionaAtraccion = () => {
         const numAtracciones = atracciones.length;
         const attrNum = randomIntFromInterval(0, numAtracciones - 1);
-        user.x_destino = atracciones[attrNum].coords[0] + 1;
-        user.y_destino = atracciones[attrNum].coords[1] + 1;
+
+        user.x_destino = atracciones[attrNum].coords[0];
+        user.y_destino = atracciones[attrNum].coords[1];
+
+        setUser({ ...user });
     }
 
-    let redibujaCasilla = (i1, j1, i2, j2) => {
-        matrix[i1 - 1][j1 - 1].color = "blue";
-        matrix[i2 - 1][j2 - 1].color = "red";
+    let redibujaAtracciones = (x, y) => {
+        matrix[x - 1][y - 1].color = "purple";
+        setMatrix([...matrix]);
+    }
+
+    let redibujaCasilla = (x1, y1, x2, y2) => {
+        matrix[x1 - 1][y1 - 1].color = "blue";
+        matrix[x2 - 1][y2 - 1].color = "red";
 
         setMatrix([...matrix]);
     }

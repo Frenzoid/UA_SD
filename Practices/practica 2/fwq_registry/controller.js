@@ -25,10 +25,10 @@ function bindSocketFunctions(io, socket, aforo) {
                 {
                     name: received.name,
                     password: received.password,
-                    x_actual: 10,
-                    y_actual: 10,
-                    x_destino: 10,
-                    y_destino: 10,
+                    x_actual: 14,
+                    y_actual: 14,
+                    x_destino: 14,
+                    y_destino: 14,
                 });
 
             usuarios[socket.id] = user.id;
