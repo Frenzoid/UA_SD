@@ -25,11 +25,11 @@ function Map(props) {
             matrix[i] = [];
             for (let j = 0; j < n; j++) {
                 // Filas ( populadas )
-                matrix[i][j] = { color: "blue" }
+                matrix[i][j] = { color: "blue", value: " ", border: "none" }
             }
         }
 
-        atracciones = [{ coords: [3, 3] }, { coords: [3, 18] }, { coords: [18, 3] }, { coords: [18, 18] }]
+        atracciones = [{ coords: [3, 3], time: 10 }, { coords: [3, 18], time: 40 }, { coords: [18, 3], time: 30 }, { coords: [18, 18], time: 70 }]
 
         setMatrix([...matrix]);
 
@@ -38,11 +38,22 @@ function Map(props) {
             if (user.x_actual == user.x_destino && user.y_actual == user.y_destino) {
                 redibujaCasilla(user.x_actual, user.y_actual, user.x_actual, user.y_actual);
                 seleccionaAtraccion();
-            } else siguientePosicion();
+            } else {
+                let posSiguiente = siguientePosicion();
+
+                redibujaCasilla(user.x_actual, user.y_actual, posSiguiente[0], posSiguiente[1]);
+
+                user.x_actual = posSiguiente[0];
+                user.y_actual = posSiguiente[1];
+
+                setUser({ ...user });
+            }
 
             atracciones.forEach((attr) => {
-                redibujaAtracciones(attr.coords[0], attr.coords[1])
+                redibujaAtracciones(attr)
             });
+
+            // Socket emit datos usuario.
 
         }, 500);
 
@@ -65,12 +76,7 @@ function Map(props) {
             y_siguiente = user.y_actual + 1;
         else y_siguiente = user.y_actual;
 
-        redibujaCasilla(user.x_actual, user.y_actual, x_siguiente, y_siguiente);
-
-        user.x_actual = x_siguiente;
-        user.y_actual = y_siguiente;
-
-        setUser({ ...user });
+        return [x_siguiente, y_siguiente];
     }
 
     let randomIntFromInterval = (min, max) => {
@@ -88,14 +94,28 @@ function Map(props) {
         setUser({ ...user });
     }
 
-    let redibujaAtracciones = (x, y) => {
-        matrix[x - 1][y - 1].color = "purple";
+    let redibujaAtracciones = (attr) => {
+        matrix[attr.coords[0] - 1][attr.coords[1] - 1].color = "purple";
+        matrix[attr.coords[0] - 1][attr.coords[1] - 1].value = attr.time;
+        if (attr.coords[0] == user.x_actual && attr.coords[1] == user.y_actual) {
+            matrix[attr.coords[0] - 1][attr.coords[1] - 1].border = "3px solid red";
+        } else {
+            matrix[attr.coords[0] - 1][attr.coords[1] - 1].border = "none";
+        }
+
         setMatrix([...matrix]);
     }
 
     let redibujaCasilla = (x1, y1, x2, y2) => {
         matrix[x1 - 1][y1 - 1].color = "blue";
-        matrix[x2 - 1][y2 - 1].color = "red";
+        matrix[x1 - 1][y1 - 1].value = " ";
+
+        if (user.x_actual == x1 && user.y_actual == y1)
+            matrix[x2 - 1][y2 - 1].color = "red";
+        else
+            matrix[x2 - 1][y2 - 1].color = "grey";
+
+        matrix[x2 - 1][y2 - 1].value = user.id;
 
         setMatrix([...matrix]);
     }
@@ -130,11 +150,18 @@ function Map(props) {
 
                             return (
                                 <div
-                                    style={{ minWidth: "4%", minHeight: "30px", textAlign: "center", color: "white", backgroundColor: matrix[ipos][jpos].color }}
+                                    style={{
+                                        minWidth: "4%",
+                                        minHeight: "30px",
+                                        textAlign: "center",
+                                        color: "white",
+                                        backgroundColor: matrix[ipos][jpos].color,
+                                        border: matrix[ipos][jpos].border
+                                    }}
                                     className="card m-1"
                                     key={ipos + ", " + jpos}
                                 >
-                                    {ipos + ", " + jpos}
+                                    {matrix[ipos][jpos].value}
                                 </div>
                             )
                         })}
