@@ -12,6 +12,10 @@ function Edit(props) {
     const currentUserName = useRef(user.name);
 
     useEffect(() => {
+        // Si el usuario no esta registrado, no le permitimos acceder a esta página.
+        if (!user.id)
+            history.push("/");
+
         bindSokets();
     }, []);
 

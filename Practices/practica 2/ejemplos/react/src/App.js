@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
+import io from "socket.io-client";
 
 function App() {
   const [matrix, setMatrix] = useState([]);
 
+
   useEffect(() => {
+    const socket = io("localhost:9111", { timeout: 1000 });
+    socket.emit("dato_enviado", { saludo: "hola" });
+    socket.on("dato_recibido", (dato) => { console.log(dato) });
+    console.log("A");
 
     const n = 20;
 
@@ -31,7 +37,7 @@ function App() {
   return (
 
     <div className="container">
-
+      <h1></h1>
       {matrix.map((i, ipos) => {
 
         return (

@@ -1,4 +1,4 @@
-const dirFWQRegistry = process.env.REGISTRYADDRESS || "http://localhost:9090";
-const dirKafkaServer = process.env.KAFKAADDRESS || "oldbox.cloud:9092";
+const REGISTRYADDRESS = process.env.REGISTRYADDRESS || "http://localhost:9090";
+const KAFKAADDRESS = process.env.KAFKAADDRESS || "oldbox.cloud:9092";
 
-export { dirFWQRegistry, dirKafkaServer };
+export { REGISTRYADDRESS, KAFKAADDRESS };
