@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
 
@@ -29,7 +30,10 @@ function Map(props) {
             }
         }
 
-        atracciones = [{ coords: [3, 3], time: 10 }, { coords: [3, 18], time: 40 }, { coords: [18, 3], time: 30 }, { coords: [18, 18], time: 70 }]
+        atracciones = [{ picture: "https://i.imgur.com/Ff7SEP6.png", coords: [3, 3], time: 10 }, 
+                        {picture: "https://cdn-icons-png.flaticon.com/128/1761/1761560.png", coords: [3, 18], time: 40 }, 
+                        {picture: "https://cdn-icons-png.flaticon.com/128/2060/2060024.png", coords: [18, 3], time: 30 }, 
+                        {picture: "https://i.imgur.com/WPSPxoT.png", coords: [18, 18], time: 70 }]
 
         setMatrix([...matrix]);
 
@@ -85,11 +89,15 @@ function Map(props) {
     }
 
     let seleccionaAtraccion = () => {
-        const numAtracciones = atracciones.length;
+        let atraccionesFiltradas = atracciones.filter((attr) => {
+            if(attr.time < 60) { return attr }
+        })
+        console.log(atraccionesFiltradas)
+        const numAtracciones = atraccionesFiltradas.length;
         const attrNum = randomIntFromInterval(0, numAtracciones - 1);
 
-        user.x_destino = atracciones[attrNum].coords[0];
-        user.y_destino = atracciones[attrNum].coords[1];
+        user.x_destino = atraccionesFiltradas[attrNum].coords[0];
+        user.y_destino = atraccionesFiltradas[attrNum].coords[1];
 
         setUser({ ...user });
     }
@@ -97,6 +105,7 @@ function Map(props) {
     let redibujaAtracciones = (attr) => {
         matrix[attr.coords[0] - 1][attr.coords[1] - 1].color = "purple";
         matrix[attr.coords[0] - 1][attr.coords[1] - 1].value = attr.time;
+        matrix[attr.coords[0] - 1][attr.coords[1] - 1].src = attr.picture;
         if (attr.coords[0] == user.x_actual && attr.coords[1] == user.y_actual) {
             matrix[attr.coords[0] - 1][attr.coords[1] - 1].border = "3px solid red";
         } else {
@@ -151,16 +160,20 @@ function Map(props) {
                             return (
                                 <div
                                     style={{
-                                        minWidth: "4%",
-                                        minHeight: "30px",
+                                        minWidth: "60px",
+                                        minHeight: "60px",
                                         textAlign: "center",
                                         color: "white",
                                         backgroundColor: matrix[ipos][jpos].color,
-                                        border: matrix[ipos][jpos].border
+                                        border: matrix[ipos][jpos].border,
                                     }}
                                     className="card m-1"
                                     key={ipos + ", " + jpos}
                                 >
+                                    {matrix[ipos][jpos].src? 
+                                    <img src={matrix[ipos][jpos].src} alt="salida" className="mx-auto" style={{maxHeight:"60%", maxWidth:"60%"}}/>:
+                                    ""
+                                    }
                                     {matrix[ipos][jpos].value}
                                 </div>
                             )
