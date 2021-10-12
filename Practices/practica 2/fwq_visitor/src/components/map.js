@@ -10,6 +10,7 @@ function Map(props) {
     const [matrix, setMatrix] = useState([]);
 
     let atracciones;
+    let usuarios;
     let inter;
 
     useEffect(() => {
@@ -26,46 +27,76 @@ function Map(props) {
             matrix[i] = [];
             for (let j = 0; j < n; j++) {
                 // Filas ( populadas )
-                matrix[i][j] = { color: "blue", value: " ", border: "none" }
+                matrix[i][j] = { color: "blue", value: " " }
             }
         }
 
-        atracciones = [{ picture: "https://i.imgur.com/Ff7SEP6.png", coords: [3, 3], time: 10 }, 
-                        {picture: "https://cdn-icons-png.flaticon.com/128/1761/1761560.png", coords: [3, 18], time: 40 }, 
-                        {picture: "https://cdn-icons-png.flaticon.com/128/2060/2060024.png", coords: [18, 3], time: 30 }, 
-                        {picture: "https://i.imgur.com/WPSPxoT.png", coords: [18, 18], time: 70 }]
+        // Provisional
+        atracciones = [
+            { picture: "https://i.imgur.com/Ff7SEP6.png", coords: [3, 3], time: 10 },
+            { picture: "https://cdn-icons-png.flaticon.com/128/1761/1761560.png", coords: [1, 18], time: 40 },
+            { picture: "https://cdn-icons-png.flaticon.com/128/2060/2060024.png", coords: [14, 3], time: 30 },
+            { picture: "https://i.imgur.com/WPSPxoT.png", coords: [18, 18], time: 70 }
+        ]
 
-        setMatrix([...matrix]);
 
         inter = setInterval(() => {
 
-            if (user.x_actual == user.x_destino && user.y_actual == user.y_destino) {
-                redibujaCasilla(user.x_actual, user.y_actual, user.x_actual, user.y_actual);
+            // TODO SOLO Renderizar mapa y emitir datos del usuario. Pintar casos especiales.
+
+            if (usuarioEstaEnDestino()) {
+                colorearCasilla(user.x_actual, user.y_actual, "red");
+                escribirCasilla(user.x_actual, user.y_actual, user.id);
+                bordearCasilla(user.x_actual, user.y_actual, "3px solid red");
+
                 seleccionaAtraccion();
             } else {
-                let posSiguiente = siguientePosicion();
+                bordearCasilla(user.x_actual, user.y_actual, "");
+                colorearCasilla(user.x_actual, user.y_actual, "blue");
+                escribirCasilla(user.x_actual, user.y_actual, " ");
 
-                redibujaCasilla(user.x_actual, user.y_actual, posSiguiente[0], posSiguiente[1]);
+                moverseSiguientePosicion();
 
-                user.x_actual = posSiguiente[0];
-                user.y_actual = posSiguiente[1];
-
-                setUser({ ...user });
+                colorearCasilla(user.x_actual, user.y_actual, "red");
+                escribirCasilla(user.x_actual, user.y_actual, user.id);
             }
 
             atracciones.forEach((attr) => {
-                redibujaAtracciones(attr)
+                colorearCasilla(attr.coords[0], attr.coords[1], "purple");
+                escribirCasilla(attr.coords[0], attr.coords[1], attr.time);
+                definirImagenCasilla(attr.coords[0], attr.coords[1], attr.picture);
             });
 
-            // Socket emit datos usuario.
+            actualizarUsuario();
+            renderizarMapa();
 
         }, 500);
 
-        return () => { clearInterval(inter) }
+        // Parar el bucle cuando se desrenderice el componente ( cuando se cambia a otra página )
+        return () => { clearInterval(inter); }
 
     }, []);
 
-    let siguientePosicion = () => {
+
+    // Auxiliares.
+
+    let randomIntFromInterval = (min, max) => {
+        // min and max included
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
+
+    // Métodos de gestion del usuario actual.
+
+    let actualizarUsuario = () => {
+        setUser({ ...user });
+    }
+
+    let usuarioEstaEnDestino = () => {
+        return user.x_actual == user.x_destino && user.y_actual == user.y_destino;
+    }
+
+    let moverseSiguientePosicion = () => {
         let x_siguiente, y_siguiente;
 
         if (user.x_actual > user.x_destino)
@@ -80,61 +111,59 @@ function Map(props) {
             y_siguiente = user.y_actual + 1;
         else y_siguiente = user.y_actual;
 
-        return [x_siguiente, y_siguiente];
-    }
-
-    let randomIntFromInterval = (min, max) => {
-        // min and max included
-        return Math.floor(Math.random() * (max - min + 1) + min)
+        user.x_actual = x_siguiente;
+        user.y_actual = y_siguiente;
     }
 
     let seleccionaAtraccion = () => {
         let atraccionesFiltradas = atracciones.filter((attr) => {
-            if(attr.time < 60) { return attr }
-        })
+            if (attr.time < 60) { return attr }
+        });
+
         console.log(atraccionesFiltradas)
+
         const numAtracciones = atraccionesFiltradas.length;
         const attrNum = randomIntFromInterval(0, numAtracciones - 1);
 
+        // Provisional
         user.x_destino = atraccionesFiltradas[attrNum].coords[0];
         user.y_destino = atraccionesFiltradas[attrNum].coords[1];
-
-        setUser({ ...user });
     }
 
-    let redibujaAtracciones = (attr) => {
-        matrix[attr.coords[0] - 1][attr.coords[1] - 1].color = "purple";
-        matrix[attr.coords[0] - 1][attr.coords[1] - 1].value = attr.time;
-        matrix[attr.coords[0] - 1][attr.coords[1] - 1].src = attr.picture;
-        if (attr.coords[0] == user.x_actual && attr.coords[1] == user.y_actual) {
-            matrix[attr.coords[0] - 1][attr.coords[1] - 1].border = "3px solid red";
-        } else {
-            matrix[attr.coords[0] - 1][attr.coords[1] - 1].border = "none";
-        }
 
+    // Métodos del renderizado del mapa
+
+    let renderizarMapa = () => {
         setMatrix([...matrix]);
     }
 
-    let redibujaCasilla = (x1, y1, x2, y2) => {
-        matrix[x1 - 1][y1 - 1].color = "blue";
-        matrix[x1 - 1][y1 - 1].value = " ";
-
-        if (user.x_actual == x1 && user.y_actual == y1)
-            matrix[x2 - 1][y2 - 1].color = "red";
-        else
-            matrix[x2 - 1][y2 - 1].color = "grey";
-
-        matrix[x2 - 1][y2 - 1].value = user.id;
-
-        setMatrix([...matrix]);
+    let definirImagenCasilla = (x, y, src) => {
+        matrix[x][y].picture = src;
     }
+
+    let escribirCasilla = (x, y, value) => {
+        matrix[x][y].value = value;
+    }
+
+    let bordearCasilla = (x, y, border) => {
+        matrix[x][y].border = border;
+    }
+
+    let colorearCasilla = (x, y, color) => {
+        matrix[x][y].color = color;
+    }
+
+
+    // Métodos de la conexión de sockets.
 
     let bindSokets = () => {
         socket.on("usuario_desregistrado", () => { setUser({}); history.push("/"); })
     };
 
-    let desregistrar = (e) => {
-        e.preventDefault();
+    let desregistrar = (e = null) => {
+        if (e)
+            e.preventDefault();
+
         socket.emit("desregistrar_usuario");
     }
 
@@ -170,9 +199,9 @@ function Map(props) {
                                     className="card m-1"
                                     key={ipos + ", " + jpos}
                                 >
-                                    {matrix[ipos][jpos].src? 
-                                    <img src={matrix[ipos][jpos].src} alt="salida" className="mx-auto" style={{maxHeight:"60%", maxWidth:"60%"}}/>:
-                                    ""
+                                    {matrix[ipos][jpos].picture ?
+                                        <img src={matrix[ipos][jpos].picture} alt="salida" className="mx-auto" style={{ maxHeight: "60%", maxWidth: "60%" }} /> :
+                                        ""
                                     }
                                     {matrix[ipos][jpos].value}
                                 </div>
