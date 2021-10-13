@@ -4,13 +4,14 @@ import { useHistory } from "react-router-dom";
 
 function Map(props) {
     const history = useHistory();
-    const socket = props.socket;
+    const socketRegistry = props.socketRegistry;
+    const kafkaWebSocket = props.kafkaWebSocket;
 
     const [user, setUser] = [props.user, props.setUser];
     const [matrix, setMatrix] = useState([]);
 
-    let atracciones;
-    let usuarios;
+    let atracciones = [];
+    let usuarios = [];
     let inter;
 
     useEffect(() => {
@@ -45,20 +46,11 @@ function Map(props) {
             // TODO SOLO Renderizar mapa y emitir datos del usuario. Pintar casos especiales.
 
             if (usuarioEstaEnDestino()) {
-                colorearCasilla(user.x_actual, user.y_actual, "red");
-                escribirCasilla(user.x_actual, user.y_actual, user.id);
-                bordearCasilla(user.x_actual, user.y_actual, "3px solid red");
-
                 seleccionaAtraccion();
+                kafkaWebSocket.emit("dato_enviado", user);
             } else {
-                bordearCasilla(user.x_actual, user.y_actual, "");
-                colorearCasilla(user.x_actual, user.y_actual, "blue");
-                escribirCasilla(user.x_actual, user.y_actual, " ");
-
                 moverseSiguientePosicion();
-
-                colorearCasilla(user.x_actual, user.y_actual, "red");
-                escribirCasilla(user.x_actual, user.y_actual, user.id);
+                kafkaWebSocket.emit("dato_enviado", user);
             }
 
             atracciones.forEach((attr) => {
@@ -70,7 +62,7 @@ function Map(props) {
             actualizarUsuario();
             renderizarMapa();
 
-        }, 500);
+        }, 1000);
 
         // Parar el bucle cuando se desrenderice el componente ( cuando se cambia a otra página )
         return () => { clearInterval(inter); }
@@ -157,14 +149,32 @@ function Map(props) {
     // Métodos de la conexión de sockets.
 
     let bindSokets = () => {
-        socket.on("usuario_desregistrado", () => { setUser({}); history.push("/"); })
+        kafkaWebSocket.on("dato_recibido", (usr) => {
+            console.log(usr);
+            if (usuarios[usr.id]) {
+                bordearCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, "");
+                colorearCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, "blue");
+                escribirCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, " ");
+            }
+
+            bordearCasilla(usr.x_actual, usr.y_actual, "");
+            if (user.id == usr.id)
+                colorearCasilla(usr.x_actual, usr.y_actual, "red");
+            else
+                colorearCasilla(usr.x_actual, usr.y_actual, "grey");
+
+            escribirCasilla(usr.x_actual, usr.y_actual, usr.id);
+
+            usuarios[usr.id] = usr;
+        });
+        socketRegistry.on("usuario_desregistrado", () => { setUser({}); history.push("/"); })
     };
 
     let desregistrar = (e = null) => {
         if (e)
             e.preventDefault();
 
-        socket.emit("desregistrar_usuario");
+        socketRegistry.emit("desregistrar_usuario");
     }
 
 

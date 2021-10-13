@@ -1,6 +1,6 @@
 let kafka = require('kafka-node');
 
-let client = new kafka.KafkaClient({ kafkaHost: 'localhost:9092', autoConnect: true });
+let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect: true });
 
 let consumer = new kafka.Consumer(
     client,

@@ -1,4 +1,8 @@
 import io from "socket.io-client";
-import { REGISTRYADDRESS } from "./parametros";
 
-export const socket = io(REGISTRYADDRESS, { timeout: 1000 });
+import { REGISTRYADDRESS, KAFKACONTROLLER } from "./parametros";
+
+const socketRegistry = io(REGISTRYADDRESS, { timeout: 1000 });
+const kafkaWebSocket = io(KAFKACONTROLLER, { timeout: 1000 });
+
+export { socketRegistry, kafkaWebSocket };

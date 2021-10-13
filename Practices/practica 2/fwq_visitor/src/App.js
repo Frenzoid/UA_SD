@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Switch, Route, useHistory } from "react-router-dom";
-import { socket } from "./configs/socket";
+import { socketRegistry } from "./configs/socket";
+import { kafkaWebSocket } from "./configs/socket";
 
 import Register from './components/register';
 import Map from './components/map';
@@ -8,7 +9,7 @@ import Edit from './components/edit'
 
 function App() {
   const [user, setUser] = useState({ name: "", password: "" });
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [socketRegistryConnected, setSocketConnected] = useState(false);
 
   const history = useHistory();
 
@@ -17,8 +18,8 @@ function App() {
   }, []);
 
   let bindSokets = () => {
-    socket.on("connect", () => { setSocketConnected(true) });
-    socket.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") history.push("/") });
+    socketRegistry.on("connect", () => { setSocketConnected(true) });
+    socketRegistry.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") history.push("/") });
   };
 
   return (
@@ -26,8 +27,9 @@ function App() {
 
       <Route path="/map">
         <Map
-          socketConnected={socketConnected}
-          socket={socket}
+          socketRegistryConnected={socketRegistryConnected}
+          socketRegistry={socketRegistry}
+          kafkaWebSocket={kafkaWebSocket}
           user={user}
           setUser={setUser}
         ></Map>
@@ -35,8 +37,8 @@ function App() {
 
       <Route path="/edit">
         <Edit
-          socketConnected={socketConnected}
-          socket={socket}
+          socketRegistryConnected={socketRegistryConnected}
+          socketRegistry={socketRegistry}
           user={user}
           setUser={setUser}
         ></Edit>
@@ -47,8 +49,8 @@ function App() {
         {/* Así es como se pasan variables a los componentes hijos,
         los hijos los reciben por parametro en la variable "props" */}
         <Register
-          socketConnected={socketConnected}
-          socket={socket}
+          socketRegistryConnected={socketRegistryConnected}
+          socketRegistry={socketRegistry}
           user={user}
           setUser={setUser}
         ></Register>
