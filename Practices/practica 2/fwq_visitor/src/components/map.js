@@ -62,7 +62,7 @@ function Map(props) {
             actualizarUsuario();
             renderizarMapa();
 
-        }, 1000);
+        }, 200);
 
         // Parar el bucle cuando se desrenderice el componente ( cuando se cambia a otra página )
         return () => { clearInterval(inter); }
