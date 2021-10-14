@@ -1,3 +1,4 @@
+// npm run start:registry 9090
 const { server, io } = require("./socket");
 const sequelize = require('./config/bd-connector');
 
