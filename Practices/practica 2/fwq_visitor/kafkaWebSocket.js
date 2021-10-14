@@ -48,7 +48,9 @@ producer.on('ready', () => {
 
 });
 
+let i = 0;
 consumerUser.on('message', (message) => {
+    console.log(i++);
     io.emit("dato_recibido", JSON.parse(message.value));
 });
 

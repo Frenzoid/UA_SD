@@ -47,11 +47,11 @@ function Map(props) {
 
             if (usuarioEstaEnDestino()) {
                 seleccionaAtraccion();
-                kafkaWebSocket.emit("dato_enviado", user);
             } else {
                 moverseSiguientePosicion();
-                kafkaWebSocket.emit("dato_enviado", user);
             }
+
+            kafkaWebSocket.emit("dato_enviado", user);
 
             atracciones.forEach((attr) => {
                 colorearCasilla(attr.coords[0], attr.coords[1], "purple");
@@ -62,10 +62,15 @@ function Map(props) {
             actualizarUsuario();
             renderizarMapa();
 
-        }, 200);
+        }, 750);
 
         // Parar el bucle cuando se desrenderice el componente ( cuando se cambia a otra página )
-        return () => { clearInterval(inter); }
+        return () => {
+            clearInterval(inter);
+            kafkaWebSocket.off("dato_recibido");
+            socketRegistry.off("usuario_desconectado");
+            socketRegistry.off("usuario_desregistrado");
+        }
 
     }, []);
 
@@ -157,16 +162,27 @@ function Map(props) {
                 escribirCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, " ");
             }
 
-            bordearCasilla(usr.x_actual, usr.y_actual, "");
             if (user.id == usr.id)
                 colorearCasilla(usr.x_actual, usr.y_actual, "red");
             else
                 colorearCasilla(usr.x_actual, usr.y_actual, "grey");
 
+            if (usuarioEstaEnDestino())
+                bordearCasilla(usr.x_actual, usr.y_actual, "3px solid red");
+
+
             escribirCasilla(usr.x_actual, usr.y_actual, usr.id);
 
             usuarios[usr.id] = usr;
         });
+
+        socketRegistry.on("usuario_desconectado", (usrid) => {
+            bordearCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, "");
+            colorearCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, "blue");
+            escribirCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, " ");
+            delete usuarios[usrid];
+        })
+
         socketRegistry.on("usuario_desregistrado", () => { setUser({}); history.push("/"); })
     };
 

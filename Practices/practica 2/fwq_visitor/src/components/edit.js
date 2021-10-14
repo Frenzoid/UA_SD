@@ -16,6 +16,11 @@ function Edit(props) {
             history.push("/");
 
         bindSokets();
+
+        return () => {
+            socketRegistry.off("error_registry");
+            socketRegistry.off("usuario_editado");
+        }
     }, []);
 
     let bindSokets = () => {
