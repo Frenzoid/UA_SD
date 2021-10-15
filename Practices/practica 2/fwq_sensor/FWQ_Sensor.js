@@ -8,7 +8,7 @@ let payloads = [{ topic: 'numeroPersonas', messages: "", partition: 0 }];
 
 let idAttr = process.env.IDATTR || process.argv[2];
 
-if (!idAttr) throw Exception("Falta la ID de la atraccion");
+if (!idAttr) throw ("Falta la ID de la atraccion");
 
 
 let randomIntFromInterval = (min, max) => {
