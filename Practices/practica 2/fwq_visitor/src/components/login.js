@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
 
-function Register(props) {
+function Login(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
     const socketRegistryConnected = props.socketRegistryConnected;
@@ -21,26 +21,26 @@ function Register(props) {
     }, []);
 
     let bindSokets = () => {
-        socketRegistry.on("usuario_registrado", (registeredUser) => {
-            setUser(registeredUser);
-            history.push("/");
+        socketRegistry.on("usuario_autenticado", (loggedUser) => {
+            setUser(loggedUser);
+            history.push("/map");
         });
 
         socketRegistry.on("error_registry", (err) => { setErrorMsg(err) });
     };
 
     let unbindSockets = () => {
+        socketRegistry.off("usuario_autenticado");
         socketRegistry.off("error_registry");
-        socketRegistry.off("usuario_registrado");
     }
 
-    let registrarse = (e) => {
+    let autenticar = (e) => {
         e.preventDefault();
 
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
         else
-            socketRegistry.emit("registrar_usuario", user);
+            socketRegistry.emit("autenticar_usuario", user);
     }
 
 
@@ -48,7 +48,7 @@ function Register(props) {
         <div className="container">
             <div>
                 <h1 className="text-center mt-3">
-                    {user.name ? "¡ Registrando " + user.name + " !" : "Registrarse"}
+                    {user.name ? "¡ Autenticando " + user.name + " !" : "Autenticación"}
                 </h1>
 
                 <form>
@@ -60,11 +60,11 @@ function Register(props) {
                         <label>Password</label>
                         <input disabled={!socketRegistryConnected ? true : false} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
-                    <button onClick={registrarse} disabled={!socketRegistryConnected ? true : false} className="btn btn-success">
-                        Registrarse!
+                    <button onClick={autenticar} disabled={!socketRegistryConnected ? true : false} className="btn btn-success">
+                        Autenticarse y entrar al parque!
                     </button>
-                    <button onClick={() => { history.push("/login") }} disabled={!socketRegistryConnected ? true : false} className="btn btn-primary ms-2">
-                        Ya tines cuenta? Autenticate.
+                    <button onClick={() => { history.push("/register") }} disabled={!socketRegistryConnected ? true : false} className="btn btn-primary ms-2">
+                        Crear una cuenta
                     </button>
                 </form>
 
@@ -86,4 +86,4 @@ function Register(props) {
 
 }
 
-export default Register;
+export default Login;

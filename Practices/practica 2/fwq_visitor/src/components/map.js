@@ -16,9 +16,9 @@ function Map(props) {
 
     useEffect(() => {
         // Si el usuario no esta registrado, no le permitimos acceder a esta página.
-        if (!user.id) {
+        if (!user.logged)
             history.push("/");
-        }
+
 
         bindSokets();
 
@@ -31,6 +31,8 @@ function Map(props) {
                 matrix[i][j] = { color: "blue", value: " " }
             }
         }
+
+        renderizarMapa();
 
         // Provisional
         atracciones = [
@@ -66,10 +68,8 @@ function Map(props) {
 
         // Parar el bucle cuando se desrenderice el componente ( cuando se cambia a otra página )
         return () => {
+            unbindSockets();
             clearInterval(inter);
-            kafkaWebSocket.off("dato_recibido");
-            socketRegistry.off("usuario_desconectado");
-            socketRegistry.off("usuario_desregistrado");
         }
 
     }, []);
@@ -181,23 +181,32 @@ function Map(props) {
             colorearCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, "blue");
             escribirCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, " ");
             delete usuarios[usrid];
+        });
+
+        socketRegistry.on("usuarioactual_desautenticado", () => {
+            setUser({});
+            history.push("/");
         })
+    }
 
-        socketRegistry.on("usuario_desregistrado", () => { setUser({}); history.push("/"); })
-    };
+    let unbindSockets = () => {
+        kafkaWebSocket.off("dato_recibido");
+        socketRegistry.off("usuario_desconectado");
+        socketRegistry.off("usuario_desregistrado");
+    }
 
-    let desregistrar = (e = null) => {
+    let desautenticar = (e = null) => {
         if (e)
             e.preventDefault();
 
-        socketRegistry.emit("desregistrar_usuario");
+        socketRegistry.emit("desautenticar_usuario", user);
     }
 
 
     return (
         <div className="container">
             <div className="text-center my-3">
-                <button onClick={desregistrar} className="btn btn-danger m-2"> Salir del parque.</button>
+                <button onClick={desautenticar} className="btn btn-danger m-2"> Salir del parque.</button>
                 <button onClick={(e) => { e.preventDefault(); history.push("/edit") }} className="btn btn-primary m-2"> Editar usuario.</button>
             </div>
 

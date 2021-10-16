@@ -4,6 +4,7 @@ import { socketRegistry } from "./configs/socket";
 import { kafkaWebSocket } from "./configs/socket";
 
 import Register from './components/register';
+import Login from './components/login'
 import Map from './components/map';
 import Edit from './components/edit'
 
@@ -44,10 +45,7 @@ function App() {
         ></Edit>
       </Route>
 
-      <Route path="/">
-
-        {/* Así es como se pasan variables a los componentes hijos,
-        los hijos los reciben por parametro en la variable "props" */}
+      <Route path="/register">
         <Register
           socketRegistryConnected={socketRegistryConnected}
           socketRegistry={socketRegistry}
@@ -56,6 +54,14 @@ function App() {
         ></Register>
       </Route>
 
+      <Route path="/">
+        <Login
+          socketRegistryConnected={socketRegistryConnected}
+          socketRegistry={socketRegistry}
+          user={user}
+          setUser={setUser}
+        ></Login>
+      </Route>
     </Switch>
   );
 }

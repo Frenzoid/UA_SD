@@ -6,9 +6,7 @@ let aforoActual = 0;
 
 function bindSocketFunctions(io, socket, aforo) {
 
-    // Registrar usuario.
-    socket.on("registrar_usuario", async (received) => {
-
+    socket.on("autenticar_usuario", async (received) => {
         if (aforoActual + 1 >= aforo) {
             socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
             return;
@@ -16,10 +14,58 @@ function bindSocketFunctions(io, socket, aforo) {
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
+            aforoActual--;
+            return;
+        }
+        try {
+
+            let usr = await User.findOne({ where: { name: received.name } })
+
+            if (!usr) {
+                socket.emit("error_registry", "El usuario no existe!");
+                aforoActual--;
+                return;
+            }
+
+            if (!User.checkPassword(received.password, usr.password)) {
+                socket.emit("error_registry", "Credenciales Incorrectas.");
+                aforoActual--;
+                return;
+            }
+
+            usr.logged = true;
+            await usr.save();
+            usuarios[socket.id] = usr.id;
+
+            socket.emit("usuario_autenticado", usr);
+
+            console.log("Usuario", usr.name, "autenticado | Aforo:", aforoActual, "/", aforo);
+
+            if (aforoActual == aforo)
+                console.log("Aforo máximo alcanzado.");
+
+        } catch (err) {
+            console.error(err);
+            aforoActual--;
+            socket.emit("error_registry", "Se ha producido un error interno en FWQ_Registry.");
+        }
+    })
+
+    // Registrar usuario.
+    socket.on("registrar_usuario", async (received) => {
+
+        if (!received.name || !received.password) {
+            socket.emit("error_registry", "Faltan datos!");
             return;
         }
 
         try {
+            let usrPrev = await User.findAndCountAll({ where: { name: received.name } });
+
+            if (usrPrev.count) {
+                socket.emit("error_registry", "Ya existe un usuario con ese nombre.");
+                return;
+            }
 
             const user = await User.create(
                 {
@@ -29,16 +75,12 @@ function bindSocketFunctions(io, socket, aforo) {
                     y_actual: 14,
                     x_destino: 14,
                     y_destino: 14,
+                    logged: false,
                 });
-
-            usuarios[socket.id] = user.id;
 
             // Mandamos al cliente el usuario registrado.
             socket.emit("usuario_registrado", user)
-            console.log("Usuario", user.id, ":", user.name, "registrado. | Aforo:", aforoActual, "/", aforo);
-
-            if (aforoActual == aforo)
-                console.log("Aforo máximo alcanzado.");
+            console.log("Usuario", user.id, ":", user.name, "registrado.");
 
         } catch (err) {
             console.error(err);
@@ -55,6 +97,13 @@ function bindSocketFunctions(io, socket, aforo) {
         }
 
         try {
+            let usrPrev = await User.findOne({ where: { name: received.name } });
+
+            if (usrPrev && usrPrev.id != usuarios[socket.id]) {
+                socket.emit("error_registry", "Ya existe un usuario con ese nombre.");
+                return;
+            }
+
             let user = await User.findByPk(usuarios[socket.id]);
             user.name = received.name;
             user.password = received.password;
@@ -63,6 +112,7 @@ function bindSocketFunctions(io, socket, aforo) {
             // Mandamos al cliente el usuario actualizado.
             socket.emit("usuario_editado", user);
             console.log("Usuario", user.id, ":", received.name, "actualizado.");
+
         } catch (err) {
             console.log(err);
             socket.emit("error_registry", "Se ha producido un error interno en FWQ_Registry.");
@@ -71,35 +121,41 @@ function bindSocketFunctions(io, socket, aforo) {
 
 
     // Usuario sale manualmente.
-    socket.on("desregistrar_usuario", async () => {
+    socket.on("desautenticar_usuario", async (received) => {
         if (usuarios[socket.id] != undefined) {
-            await User.destroy({ where: { id: usuarios[socket.id] } });
 
-            // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
-            io.emit("usuario_desconectado", usuarios[socket.id]);
-            delete usuarios[socket.id];
+            let usr = await User.findByPk(usuarios[socket.id]);
+            usr.logged = false;
+            usr.save();
+
+            // Emitimos a usuario actual la desconexion.
+            socket.emit("usuarioactual_desautenticado", usr.id)
+
+            // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
+            socket.broadcast.emit("usuario_desconectado", usr.id);
             aforoActual--;
+
+
+            console.log("Desautenticado:", usr.id, " | Aforo:", aforoActual, "/", aforo)
         }
-
-        console.log("Desregistrado", socket.id)
-
-        // Emitimos un evento de vuelta, para que la aplicacion frontend proceda a mandarlo al home.
-        socket.emit("usuario_desregistrado", "Usuario desregistrado!");
+        else
+            console.error("error_registry", "Usuario a desautenticar no existe.");
     });
 
-
-    // Usuario pierde la conexion.
+    // Usuario pierdla conexion.
     socket.on("disconnect", async () => {
         if (usuarios[socket.id] != undefined) {
-            await User.destroy({ where: { id: usuarios[socket.id] } });
+
+            let usr = await User.findByPk(usuarios[socket.id]);
+            usr.logged = false;
+            usr.save();
 
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
-            io.emit("usuario_desconectado", usuarios[socket.id]);
-            delete usuarios[socket.id];
+            io.emit("usuario_desconectado", usr.id);
             aforoActual--;
         }
 
-        console.log("Desconectando", socket.id)
+        console.log("Desconectado:", socket.id)
     });
 }
 

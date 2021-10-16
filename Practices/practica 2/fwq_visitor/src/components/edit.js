@@ -32,7 +32,7 @@ function Edit(props) {
         socketRegistry.on("error_registry", (err) => { setErrorMsg(err) });
     };
 
-    let registrarse = (e) => {
+    let update = (e) => {
         e.preventDefault();
 
         if (!user.name || !user.password)
@@ -58,13 +58,20 @@ function Edit(props) {
                         <label>Password</label>
                         <input value={user.password} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
-                    <button onClick={registrarse} className="btn btn-success me-2">
+                    <button onClick={update} className="btn btn-success me-2">
                         Actualizar datos!
                     </button>
                     <button onClick={(e) => { e.preventDefault(); history.push("/map"); }} className="btn btn-primary ms-2">
                         Volver al mapa.
                     </button>
                 </form>
+
+                {!errorMsg ? "" :
+                    <div style={{ width: "100%" }} className="card card-header bg-danger text-white text-center mt-3">
+                        {errorMsg}
+
+                    </div>
+                }
             </div>
         </div >
     )
