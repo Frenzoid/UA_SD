@@ -135,11 +135,10 @@ function bindSocketFunctions(io, socket, aforo) {
             socket.broadcast.emit("usuario_desconectado", usr.id);
             aforoActual--;
 
-
-            console.log("Desautenticado:", usr.id, " | Aforo:", aforoActual, "/", aforo)
+            console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
         }
         else
-            console.error("error_registry", "Usuario a desautenticar no existe.");
+            console.error("error_registry", "Usuario a desautenticar no tiene una sesion definida.");
     });
 
     // Usuario pierdla conexion.
@@ -151,7 +150,7 @@ function bindSocketFunctions(io, socket, aforo) {
             usr.save();
 
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
-            io.emit("usuario_desconectado", usr.id);
+            io.emit("usuario_desconectado", usr.name);
             aforoActual--;
         }
 
