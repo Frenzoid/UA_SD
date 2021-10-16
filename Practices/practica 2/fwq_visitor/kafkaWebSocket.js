@@ -18,7 +18,7 @@ const topicsToCreate = [{
 
 let payloads = [{ topic: 'usuarios', messages: "", partition: 0 }];
 
-let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092', autoConnect: true });
+let client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
 
 client.createTopics(topicsToCreate, (err, data) => {
     if (err)
