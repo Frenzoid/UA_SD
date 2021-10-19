@@ -53,4 +53,8 @@ consumerUser.on('message', (message) => {
     io.emit("dato_recibido", JSON.parse(message.value));
 });
 
+producer.on("error", (err) => console.error(err))
+consumerUser.on("error", (err) => console.error(err))
+
+
 httpServer.listen(9111);
