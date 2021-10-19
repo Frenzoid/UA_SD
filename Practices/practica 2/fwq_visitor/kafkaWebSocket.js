@@ -16,42 +16,45 @@ const topicsToCreate = [{
     replicationFactor: 1
 }];
 
-let payloads = [{ topic: 'usuarios', messages: "", partition: 0 }];
 
+let payloads = [{ topic: 'usuarios', messages: "", partition: 0 }];
 let client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
 
 client.createTopics(topicsToCreate, (err, data) => {
     if (err)
         console.error("Error!", err)
-    console.log("Topicos creados!");
-});
+    else {
+        console.log("Topicos creados!");
 
-let producer = new kafka.Producer(client);
-let consumerUser = new kafka.Consumer(client, [{ topic: 'usuarios', partition: 0 }], { autoCommit: true, });
-// let consumerAttr = new kafka.Consumer(client, [{ topic: 'atracciones', partition: 0 }], { autoCommit: true, });
+        let producer = new kafka.Producer(client);
+        let consumerUser = new kafka.Consumer(client, [{ topic: 'usuarios', partition: 0 }], { autoCommit: true, });
+        // let consumerAttr = new kafka.Consumer(client, [{ topic: 'atracciones', partition: 0 }], { autoCommit: true, });
 
-producer.on('ready', () => {
-    console.log("kafka producer ready!");
+        producer.on('ready', () => {
+            console.log("kafka producer ready!");
 
-    io.on("connection", (socket) => {
-        console.log("Nueva conexión entrante con id", socket.id);
+            io.on("connection", (socket) => {
+                console.log("Nueva conexión entrante con id", socket.id);
 
-        socket.on("dato_enviado", (dato) => {
+                socket.on("dato_enviado", (dato) => {
 
-            payloads[0].messages = JSON.stringify(dato);
-            producer.send(payloads, (err, data) => {
-                if (err)
-                    console.error("Error!", err)
+                    payloads[0].messages = JSON.stringify(dato);
+                    producer.send(payloads, (err, data) => {
+                        if (err)
+                            console.error("Error!", err)
+                    });
+                });
             });
+
         });
-    });
 
+        let i = 0;
+        consumerUser.on('message', (message) => {
+            console.log(i++);
+            io.emit("dato_recibido", JSON.parse(message.value));
+        });
+
+        httpServer.listen(9111);
+    }
 });
 
-let i = 0;
-consumerUser.on('message', (message) => {
-    console.log(i++);
-    io.emit("dato_recibido", JSON.parse(message.value));
-});
-
-httpServer.listen(9111);
