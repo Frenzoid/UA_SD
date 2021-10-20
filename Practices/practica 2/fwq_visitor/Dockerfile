@@ -13,7 +13,7 @@ COPY ./build ./build
 COPY ./kafkaWebSocket.js ./kafkaWebSocket.js
 
 RUN npm install -g serve concurrently
-RUN npm install kafka-node socket.io socket.io-client
+RUN npm install kafka-node socket.io socket.io-client socket.io-encrypt
 
 
 CMD concurrently "serve -C -s build" "node kafkaWebSocket.js"
