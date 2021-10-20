@@ -12,11 +12,11 @@ WORKDIR /app
 COPY ./build ./build
 COPY ./kafkaWebSocket.js ./kafkaWebSocket.js
 
-RUN npm install -g serve
+RUN npm install -g serve concurrently
 RUN npm install kafka-node socket.io socket.io-client
 
 
-CMD serve -C -s build & node kafkaWebSocket.js
+CMD concurrently "serve -C -s build" "node kafkaWebSocket.js"
 
 
 # Antes de montar la imagen. buildeamos.
