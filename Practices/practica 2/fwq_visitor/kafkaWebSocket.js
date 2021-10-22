@@ -34,17 +34,23 @@ io.on("connection", (socket) => {
 
     let producer = new kafka.Producer(client);
     let consumerUser = new kafka.Consumer(client, [{ topic: 'usuarios', partition: 0 }], { autoCommit: true, });
+    let producerIsReady = false;
 
-    if (producer.ready) {
-        console.log("Productor listo para", socket.handshake.address);
+    while (!producerIsReady) {
 
-        socket.on("dato_enviado", (dato) => {
-            payloads[0].messages = JSON.stringify(dato);
-            producer.send(payloads, (err, data) => {
-                if (err)
-                    console.error("Error!", err)
+        if (producer.ready) {
+            console.log("Productor listo para", socket.handshake.address);
+
+            socket.on("dato_enviado", (dato) => {
+                payloads[0].messages = JSON.stringify(dato);
+                producer.send(payloads, (err, data) => {
+                    if (err)
+                        console.error("Error!", err)
+                });
             });
-        });
+
+            producerIsReady = true;
+        }
     }
 
     consumerUser.on('message', (message) => {
@@ -56,14 +62,6 @@ io.on("connection", (socket) => {
     producer.on("error", (err) => console.error(err))
     consumerUser.on("error", (err) => console.error(err))
 });
-
-// Una funcion que hace esperar ciertos ms.
-function sleep(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
-}
-
 
 httpServer.listen(9111);
 console.log("Servidor escuchando en", process.env.KAFKACONTROLLER || "http://localhost:9111");
