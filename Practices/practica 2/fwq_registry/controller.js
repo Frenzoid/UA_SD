@@ -150,11 +150,11 @@ function bindSocketFunctions(io, socket, aforo) {
             usr.save();
 
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
-            io.emit("usuario_desconectado", usr.name);
+            io.emit("usuario_desconectado", usr.id);
             aforoActual--;
         }
 
-        console.log("Desconectado:", socket.id)
+        console.log("Desconectado:", socket.id, " | Aforo:", aforoActual, "/", aforo)
     });
 }
 

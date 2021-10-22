@@ -27,15 +27,16 @@ client.createTopics(topicsToCreate, (err, data) => {
         console.log("Topicos creados!", data);
 });
 
-let producer = new kafka.Producer(client);
-let consumerUser = new kafka.Consumer(client, [{ topic: 'usuarios', partition: 0 }], { autoCommit: true, });
 // let consumerAttr = new kafka.Consumer(client, [{ topic: 'atracciones', partition: 0 }], { autoCommit: true, });
 
-producer.on('ready', () => {
-    console.log("kafka producer ready!");
+io.on("connection", (socket) => {
+    console.log("Conexión entrante desde", socket.handshake.address);
 
-    io.on("connection", (socket) => {
-        console.log("Nueva conexión entrante con id", socket.id);
+    let producer = new kafka.Producer(client);
+    let consumerUser = new kafka.Consumer(client, [{ topic: 'usuarios', partition: 0 }], { autoCommit: true, });
+
+    if (producer.ready) {
+        console.log("Productor listo para", socket.handshake.address);
 
         socket.on("dato_enviado", (dato) => {
             payloads[0].messages = JSON.stringify(dato);
@@ -44,17 +45,25 @@ producer.on('ready', () => {
                     console.error("Error!", err)
             });
         });
+    }
+
+    consumerUser.on('message', (message) => {
+        console.log("Emitiendo dato de", message.value);
+        io.emit("dato_recibido", JSON.parse(message.value));
     });
 
+
+    producer.on("error", (err) => console.error(err))
+    consumerUser.on("error", (err) => console.error(err))
 });
 
-consumerUser.on('message', (message) => {
-    console.log("Emitiendo dato de", message.value);
-    io.emit("dato_recibido", JSON.parse(message.value));
-});
-
-producer.on("error", (err) => console.error(err))
-consumerUser.on("error", (err) => console.error(err))
+// Una funcion que hace esperar ciertos ms.
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
 
 
 httpServer.listen(9111);
+console.log("Servidor escuchando en", process.env.KAFKACONTROLLER || "http://localhost:9111");
