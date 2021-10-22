@@ -9,20 +9,16 @@ ENV KAFKAADDRESS=oldbox.cloud:9092
 
 WORKDIR /app
 
-COPY ./build ./build
-COPY ./kafkaWebSocket.js ./kafkaWebSocket.js
+COPY ./ ./
 
 RUN npm install -g serve concurrently
-RUN npm install kafka-node socket.io socket.io-client socket.io-encrypt
+RUN npm install kafka-node socket.io socket.io-client socket.io-encrypt react-scripts
 
+RUN npm run build --production
 
 CMD concurrently "serve -C -s build" "node kafkaWebSocket.js"
 
-
-# Antes de montar la imagen. buildeamos.
-#   npm run build --production
-
-# Para montar la image: 
+# Para montar la image:
 #   docker build -t sd:fwq_visitor .
 
 # Para arrancar el contenedor
