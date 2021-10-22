@@ -16,7 +16,7 @@ RUN npm install kafka-node socket.io socket.io-client socket.io-encrypt react-sc
 
 RUN npm run build --production
 
-CMD concurrently "serve -C -s build" "node kafkaWebSocket.js"
+CMD concurrently "serve -C -s build" "node kafkaController.js"
 
 # Para montar la image:
 #   docker build -t sd:fwq_visitor .

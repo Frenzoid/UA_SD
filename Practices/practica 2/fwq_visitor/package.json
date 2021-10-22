@@ -22,7 +22,7 @@
   },
   "scripts": {
     "serve": "serve -s build",
-    "kafka": "node kafkaWebSocket.js",
+    "kafka": "node kafkaController.js",
     "start": "concurrently \"react-scripts start\" \"npm run kafka\" ",
     "build": "react-scripts build",
     "test": "react-scripts test",
