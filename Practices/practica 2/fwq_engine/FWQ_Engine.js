@@ -57,49 +57,50 @@ async function start() {
         // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
         await runDBPreparations();
 
+        let inter1 = setInterval(() => {
+            if (visitanteEnvProd.ready) {
+                clearInterval(inter1);
+                console.log("Kafka visitante ready status:", visitanteEnvProd.ready);
+
+                visitanteRepCons.on('message', async (message) => {
+                    // {"id":1,"name":"a","password":"","x_actual":3,"y_actual":11,"x_destino":3,"y_destino":3,"logged":true}
+                    let userObject = JSON.parse(message.value);
+                    console.log("Dato recibido de Usuario", userObject);
+
+                    let user = await User.findByPk(userObject.id);
+                    user.x_actual = userObject.x_actual;
+                    user.y_actual = userObject.y_actual;
+                    user.x_destino = userObject.x_destino;
+                    user.y_destino = userObject.y_destino;
+                    await user.save();
+
+                    payloadsVisitante[0].messages = JSON.stringify(user);
+                    visitanteEnvProd.send(payloadsVisitante, (err, data) => {
+                        if (err)
+                            console.error("Error!", err)
+                        else
+                            console.log(data);
+                    });
+                });
+
+
+                visitanteEnvProd.on("error", (err) => console.error(err));
+                visitanteRepCons.on("error", (err) => console.error(err));
+
+            }
+        });
+
         const socketClient = io(process.env.WTSADDRESS || process.argv[3], { timeout: 1000, reconnect: true });
         encrypt('ABRACADABRA')(socketClient);
 
         socketClient.on("connect", () => {
             console.log("Engine conectado con WTS");
 
-            let inter1 = setInterval(() => {
-                if (visitanteEnvProd.ready) {
-                    clearInterval(inter1);
-                    console.log(visitanteEnvProd.ready);
-
-                    visitanteRepCons.on('message', async (message) => {
-                        // {"id":1,"name":"a","password":"","x_actual":3,"y_actual":11,"x_destino":3,"y_destino":3,"logged":true}
-                        console.log("Dato recibido de Usuario", message.value);
-
-                        let userObject = JSON.parse(message.value);
-
-                        let user = await User.findByPk(userObject.id);
-                        user.x_actual = userObject.x_actual;
-                        user.y_actual = userObject.y_actual;
-
-                        await user.save();
-
-                        payloadsVisitante[0].messages = JSON.stringify(user);
-                        visitanteEnvProd.send(payloadsVisitante, (err, data) => {
-                            if (err)
-                                console.error("Error!", err)
-                            else
-                                console.log(data);
-                        });
-                    });
-
-
-                    visitanteEnvProd.on("error", (err) => console.error(err));
-                    visitanteRepCons.on("error", (err) => console.error(err));
-
-                }
-            });
 
             let inter2 = setInterval(() => {
                 if (atraccionesEnvProd.ready) {
                     clearInterval(inter2);
-                    console.log(atraccionesEnvProd.ready);
+                    console.log("Kafka atraccion ready status:", atraccionesEnvProd.ready);
 
                     setInterval(() => {
                         socketClient.emit("solicitar_atracciones");
@@ -127,7 +128,7 @@ async function start() {
                                         coord_y: atraccion.coordY,
                                     });
                                 }
-                                console.log(JSON.stringify(attr));
+                                console.log(JSON.parse(JSON.stringify(attr)));
                             }
                         });
 

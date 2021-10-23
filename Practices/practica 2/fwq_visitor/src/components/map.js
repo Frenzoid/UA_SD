@@ -48,7 +48,7 @@ function Map(props) {
             kafkaWebSocket.emit("dato_enviado_usr", user);
 
             if (atracciones) {
-                console.log(atracciones);
+                console.log("Atracciones actuales:", atracciones);
                 atracciones.forEach((attr) => {
                     colorearCasilla(attr.coordX, attr.coordY, "purple");
                     escribirCasilla(attr.coordX, attr.coordY, attr.tiempo);
@@ -56,7 +56,7 @@ function Map(props) {
                     bordearCasilla(attr.coordX, attr.coordY, "")
 
                     if (attr.tiempo >= 60)
-                        bordearCasilla(attr.coordX, attr.coordY, "4px solid red")
+                        bordearCasilla(attr.coordX, attr.coordY, "10px solid red")
                 });
             }
 
@@ -116,7 +116,7 @@ function Map(props) {
             if (attr.tiempo < 60) { return attr }
         });
 
-        console.log(atraccionesFiltradas)
+        console.log("Atracciones Filtradas:", atraccionesFiltradas)
 
         const numAtracciones = atraccionesFiltradas.length;
 
@@ -124,7 +124,7 @@ function Map(props) {
             // Si no hay atracciones disponibles, quitate quitecito.
             console.log("ARRAY VACIO", numAtracciones);
             user.x_destino = user.x_actual;
-            user.y_destino = user.x_actual;
+            user.y_destino = user.y_actual;
             return;
         }
 
@@ -163,7 +163,7 @@ function Map(props) {
 
     let bindSokets = () => {
         kafkaWebSocket.on("dato_recibido_usr", (usr) => {
-            console.log(usr);
+            console.log("Usuario kafka", usr, "Usuario actual", user);
 
             if (usr.id == user.id) {
                 colorearCasilla(posAnt.x_actual, posAnt.y_actual, "blue");
@@ -172,12 +172,12 @@ function Map(props) {
 
                 posAnt = usr;
 
-                colorearCasilla(user.x_actual, user.y_actual, "red");
-                escribirCasilla(user.x_actual, user.y_actual, " ");
+                colorearCasilla(user.x_actual, user.y_actual, "green");
+                escribirCasilla(user.x_actual, user.y_actual, user.name);
             }
 
             if (usuarioEstaEnDestino())
-                bordearCasilla(usr.x_actual, usr.y_actual, "3px solid red");
+                bordearCasilla(user.x_actual, user.y_actual, "5px solid black");
 
         });
 

@@ -71,10 +71,10 @@ function bindSocketFunctions(io, socket, aforo) {
                 {
                     name: received.name,
                     password: received.password,
-                    x_actual: 14,
-                    y_actual: 14,
-                    x_destino: 14,
-                    y_destino: 14,
+                    x_actual: 9,
+                    y_actual: 9,
+                    x_destino: 9,
+                    y_destino: 9,
                     logged: false,
                 });
 
@@ -111,7 +111,7 @@ function bindSocketFunctions(io, socket, aforo) {
 
             // Mandamos al cliente el usuario actualizado.
             socket.emit("usuario_editado", user);
-            console.log("Usuario", user.id, ":", received.name, "actualizado.");
+            console.log("Usuario", user.id, ":", received.name, "actualizado.", JSON.parse(JSON.stringify(user)));
 
         } catch (err) {
             console.log(err);

@@ -67,7 +67,7 @@ let inter = setInterval(() => {
   if (producer.ready) {
     setInterval(() => {
       // Cada persona tiene un tiempo de 5 segs
-      payloads[0].messages = JSON.stringify({ personas: randomIntFromInterval(0, 17), id, coordX, coordY, imagen });
+      payloads[0].messages = JSON.stringify({ personas: randomIntFromInterval(0, 14), id, coordX, coordY, imagen });
 
       producer.send(payloads, (err, data) => {
         console.log(data);

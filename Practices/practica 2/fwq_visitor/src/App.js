@@ -20,7 +20,7 @@ function App() {
 
   let bindSokets = () => {
     socketRegistry.on("connect", () => { setSocketConnected(true) });
-    socketRegistry.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") history.push("/") });
+    socketRegistry.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") { setUser({}); history.push("/") } });
   };
 
   return (
