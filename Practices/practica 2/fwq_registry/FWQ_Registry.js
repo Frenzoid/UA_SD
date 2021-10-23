@@ -1,4 +1,6 @@
 // npm run start:registry 9090
+const encrypt = require('socket.io-encrypt')
+
 const { server, io } = require("./socket");
 const sequelize = require('./config/bd-connector');
 
@@ -29,6 +31,8 @@ async function start() {
             aforo = await Aforo.findOne();
         }
         aforo = aforo.aforo;
+
+        io.use(encrypt('ABRACADABRA'));
 
         // Por cada conexion...
         io.on("connection", (socket) => {

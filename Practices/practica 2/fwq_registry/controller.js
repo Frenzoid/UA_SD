@@ -126,13 +126,12 @@ function bindSocketFunctions(io, socket, aforo) {
 
             let usr = await User.findByPk(usuarios[socket.id]);
             usr.logged = false;
+            usr.x_actual = 9;
+            usr.y_actual = 9;
             usr.save();
 
             // Emitimos a usuario actual la desconexion.
             socket.emit("usuarioactual_desautenticado", usr.id)
-
-            // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
-            socket.broadcast.emit("usuario_desconectado", usr.id);
             aforoActual--;
 
             console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
@@ -147,10 +146,10 @@ function bindSocketFunctions(io, socket, aforo) {
 
             let usr = await User.findByPk(usuarios[socket.id]);
             usr.logged = false;
+            usr.x_actual = 9;
+            usr.y_actual = 9;
             usr.save();
 
-            // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
-            io.emit("usuario_desconectado", usr.id);
             aforoActual--;
         }
 

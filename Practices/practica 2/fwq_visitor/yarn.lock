@@ -3780,6 +3780,11 @@ crypto-random-string@^1.0.0:
   resolved "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-1.0.0.tgz"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
 
+cryptr@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/cryptr/-/cryptr-4.0.2.tgz#8a93b5ca7667d1a6131e396bab23a134ff1f5dc6"
+  integrity sha512-gLTcYjmLGe0Kk1yyacvjNKvSdkWBNNgG2tDnbRQP7yE559x/RJLo/I3WAmwCXNXf/fzMHCNp9vDv3PCopZDpXw==
+
 css-blank-pseudo@^0.1.4:
   version "0.1.4"
   resolved "https://registry.npmjs.org/css-blank-pseudo/-/css-blank-pseudo-0.1.4.tgz"
@@ -10405,6 +10410,13 @@ socket.io-client@^4.2.0:
     parseuri "0.0.6"
     socket.io-parser "~4.0.4"
 
+socket.io-encrypt@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/socket.io-encrypt/-/socket.io-encrypt-0.2.1.tgz#0db9932f3222a83c8cf73e32fa91edb2c6904eab"
+  integrity sha512-YrHlLOiZE0S/7hgppK8KgIQ8sdkWrnSZpSFqBA5K95WSyaL983MT7r3lzzudjczS/PxZGieiMQS4GhAmatmQDg==
+  dependencies:
+    cryptr "^4.0.0"
+
 socket.io-parser@~4.0.4:
   version "4.0.4"
   resolved "https://registry.npmjs.org/socket.io-parser/-/socket.io-parser-4.0.4.tgz"
@@ -12150,6 +12162,11 @@ yargs@^16.2.0:
     string-width "^4.2.0"
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
+
+yarn@^1.22.15:
+  version "1.22.17"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.17.tgz#bf910747d22497b573131f7341c0e1d15c74036c"
+  integrity sha512-H0p241BXaH0UN9IeH//RT82tl5PfNraVpSpEoW+ET7lmopNC61eZ+A+IDvU8FM6Go5vx162SncDL8J1ZjRBriQ==
 
 yeast@0.1.2:
   version "0.1.2"

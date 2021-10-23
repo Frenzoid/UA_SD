@@ -1,44 +1,75 @@
 let kafka = require('kafka-node');
 
-let puertoKafka = 'oldbox.cloud:9092'; 
-let puerto = process.env.PUERTOWTS || process.argv[2];
+let puertoKafka = 'oldbox.cloud:9092';
+let puerto = process.env.WTPORT || process.argv[2];
 
 const httpServer = require("http").createServer();
+const encrypt = require('socket.io-encrypt')
 const io = require("socket.io")(httpServer, {
     cors: {
         origin: "*",
     }
 });
 
+let atracciones = [];
+
+if (!puerto) throw ("Puerto del WTS no está definido.");
+
+const topicsToCreate = [{
+    topic: 'visitante-rep',
+    partitions: 1,
+    replicationFactor: 1
+}, {
+    topic: 'visitante-env',
+    partitions: 1,
+    replicationFactor: 1
+}, {
+    topic: 'attrpersonas',
+    partitions: 1,
+    replicationFactor: 1
+}, {
+    topic: 'atraccion',
+    partitions: 1,
+    replicationFactor: 1
+}];
+
+
 let client = new kafka.KafkaClient({ kafkaHost: puertoKafka, autoConnect: true });
 
-let consumer = new kafka.Consumer(
-    client,
-    [
-        { topic: 'numeroPersonas', partition: 0 },
-    ],
-    {
-        autoCommit: true,
-    }
-);
+client.createTopics(topicsToCreate, (err, data) => {
+    if (err)
+        console.error("Error!", err)
+    else
+        console.log("Topicos creados!", data);
+});
 
+let consumer = new kafka.Consumer(client, [{ topic: 'attrpersonas', partition: 0 },], { autoCommit: true, });
 
 // Si el waitingTimeServer recibe la información
 consumer.on('message', (message) => {
     let atraccion = JSON.parse(message.value);
     atraccion.tiempo = 5 * atraccion.personas;
+
+    atracciones[atraccion.id] = atraccion;
     console.log(atraccion);
-    //io.emit("atraccion", atraccion);
 });
+
+consumer.on('error', (err) => { console.log(err) })
+
+io.use(encrypt('ABRACADABRA'));
+
+io.on('connection', (socket) => {
+    console.log("Se ha establecido la conexión con id", socket.id);
+    socket.on("solicitar_atracciones", () => {
+        console.log("enviando atracciones");
+        socket.emit("atracciones_enviadas", atracciones);
+    })
+
+})
 
 io.on('disconnect', () => {
     console.log("Se ha desconectado el Engine");
 });
 
-io.on('connection',() => {
-    console.log("Se ha establecido la conexión");
-})
-
 httpServer.listen(puerto);
-
-consumer.on('error', (err) => { console.log(err) })
+console.log("Escuchando en", puerto);

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useHistory } from "react-router-dom";
 
 function Map(props) {
@@ -11,10 +11,13 @@ function Map(props) {
     const [matrix, setMatrix] = useState([]);
 
     let atracciones = [];
-    let usuarios = [];
+    let posAnt;
     let inter;
 
     useEffect(() => {
+
+        posAnt = user;
+
         // Si el usuario no esta registrado, no le permitimos acceder a esta página.
         if (!user.logged)
             history.push("/");
@@ -34,18 +37,7 @@ function Map(props) {
 
         renderizarMapa();
 
-        // Provisional
-        atracciones = [
-            { picture: "https://i.imgur.com/Ff7SEP6.png", coords: [3, 3], time: 10 },
-            { picture: "https://cdn-icons-png.flaticon.com/128/1761/1761560.png", coords: [1, 18], time: 40 },
-            { picture: "https://cdn-icons-png.flaticon.com/128/2060/2060024.png", coords: [14, 3], time: 30 },
-            { picture: "https://i.imgur.com/WPSPxoT.png", coords: [18, 18], time: 70 }
-        ]
-
-
         inter = setInterval(() => {
-
-            // TODO SOLO Renderizar mapa y emitir datos del usuario. Pintar casos especiales.
 
             if (usuarioEstaEnDestino()) {
                 seleccionaAtraccion();
@@ -53,13 +45,20 @@ function Map(props) {
                 moverseSiguientePosicion();
             }
 
-            kafkaWebSocket.emit("dato_enviado", user);
+            kafkaWebSocket.emit("dato_enviado_usr", user);
 
-            atracciones.forEach((attr) => {
-                colorearCasilla(attr.coords[0], attr.coords[1], "purple");
-                escribirCasilla(attr.coords[0], attr.coords[1], attr.time);
-                definirImagenCasilla(attr.coords[0], attr.coords[1], attr.picture);
-            });
+            if (atracciones) {
+                console.log(atracciones);
+                atracciones.forEach((attr) => {
+                    colorearCasilla(attr.coordX, attr.coordY, "purple");
+                    escribirCasilla(attr.coordX, attr.coordY, attr.tiempo);
+                    definirImagenCasilla(attr.coordX, attr.coordY, attr.imagen);
+                    bordearCasilla(attr.coordX, attr.coordY, "")
+
+                    if (attr.tiempo >= 60)
+                        bordearCasilla(attr.coordX, attr.coordY, "4px solid red")
+                });
+            }
 
             actualizarUsuario();
             renderizarMapa();
@@ -114,17 +113,26 @@ function Map(props) {
 
     let seleccionaAtraccion = () => {
         let atraccionesFiltradas = atracciones.filter((attr) => {
-            if (attr.time < 60) { return attr }
+            if (attr.tiempo < 60) { return attr }
         });
 
         console.log(atraccionesFiltradas)
 
         const numAtracciones = atraccionesFiltradas.length;
+
+        if (numAtracciones == 0) {
+            // Si no hay atracciones disponibles, quitate quitecito.
+            console.log("ARRAY VACIO", numAtracciones);
+            user.x_destino = user.x_actual;
+            user.y_destino = user.x_actual;
+            return;
+        }
+
         const attrNum = randomIntFromInterval(0, numAtracciones - 1);
 
         // Provisional
-        user.x_destino = atraccionesFiltradas[attrNum].coords[0];
-        user.y_destino = atraccionesFiltradas[attrNum].coords[1];
+        user.x_destino = atraccionesFiltradas[attrNum].coordX;
+        user.y_destino = atraccionesFiltradas[attrNum].coordY;
     }
 
 
@@ -154,45 +162,44 @@ function Map(props) {
     // Métodos de la conexión de sockets.
 
     let bindSokets = () => {
-        kafkaWebSocket.on("dato_recibido", (usr) => {
+        kafkaWebSocket.on("dato_recibido_usr", (usr) => {
             console.log(usr);
-            if (usuarios[usr.id]) {
-                bordearCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, "");
-                colorearCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, "blue");
-                escribirCasilla(usuarios[usr.id].x_actual, usuarios[usr.id].y_actual, " ");
-            }
 
-            if (user.id == usr.id)
-                colorearCasilla(usr.x_actual, usr.y_actual, "red");
-            else
-                colorearCasilla(usr.x_actual, usr.y_actual, "grey");
+            if (usr.id == user.id) {
+                colorearCasilla(posAnt.x_actual, posAnt.y_actual, "blue");
+                bordearCasilla(posAnt.x_actual, posAnt.y_actual, "");
+                escribirCasilla(posAnt.x_actual, posAnt.y_actual, " ");
+
+                posAnt = usr;
+
+                colorearCasilla(user.x_actual, user.y_actual, "red");
+                escribirCasilla(user.x_actual, user.y_actual, " ");
+            }
 
             if (usuarioEstaEnDestino())
                 bordearCasilla(usr.x_actual, usr.y_actual, "3px solid red");
 
-
-            escribirCasilla(usr.x_actual, usr.y_actual, usr.id);
-
-            usuarios[usr.id] = usr;
         });
 
-        socketRegistry.on("usuario_desconectado", (usrid) => {
-            bordearCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, "");
-            colorearCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, "blue");
-            escribirCasilla(usuarios[usrid].x_actual, usuarios[usrid].y_actual, " ");
-            delete usuarios[usrid];
-        });
 
         socketRegistry.on("usuarioactual_desautenticado", () => {
             setUser({});
             history.push("/");
+        });
+
+        kafkaWebSocket.on("dato_recibido_attr", (attrarr) => {
+            atracciones = attrarr;
+            atracciones.forEach(attr => {
+                if (attr.coordX == user.x_destino && attr.coordY == user.y_destino && attr.tiempo >= 60) {
+                    seleccionaAtraccion();
+                }
+            });
         })
     }
 
     let unbindSockets = () => {
-        kafkaWebSocket.off("dato_recibido");
-        socketRegistry.off("usuario_desconectado");
-        socketRegistry.off("usuario_desregistrado");
+        socketRegistry.off("usuarioactual_desautenticado");
+        kafkaWebSocket.off("dato_recibido_usr");
     }
 
     let desautenticar = (e = null) => {
