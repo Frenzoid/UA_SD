@@ -60,6 +60,7 @@ async function start() {
         let inter1 = setInterval(() => {
             if (visitanteEnvProd.ready) {
                 clearInterval(inter1);
+
                 console.log("Kafka visitante ready status:", visitanteEnvProd.ready);
 
                 visitanteRepCons.on('message', async (message) => {
@@ -100,6 +101,7 @@ async function start() {
             let inter2 = setInterval(() => {
                 if (atraccionesEnvProd.ready) {
                     clearInterval(inter2);
+
                     console.log("Kafka atraccion ready status:", atraccionesEnvProd.ready);
 
                     setInterval(() => {

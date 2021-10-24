@@ -65,6 +65,8 @@ let randomIntFromInterval = (min, max) => {
 
 let inter = setInterval(() => {
   if (producer.ready) {
+    clearInterval(inter);
+
     setInterval(() => {
       // Cada persona tiene un tiempo de 5 segs
       payloads[0].messages = JSON.stringify({ personas: randomIntFromInterval(0, 14), id, coordX, coordY, imagen });
@@ -75,7 +77,6 @@ let inter = setInterval(() => {
 
     }, 2000);
 
-    clearInterval(inter);
   }
 
 });

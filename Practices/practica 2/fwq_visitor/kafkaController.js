@@ -46,6 +46,8 @@ io.on("connection", (socket) => {
 
             let inter = setInterval(() => {
                 if (visitanteRepProd.ready) {
+                    clearInterval(inter);
+
                     console.log("Productor listo para", socket.handshake.address);
 
                     socket.on("dato_enviado_usr", (dato) => {
@@ -57,8 +59,6 @@ io.on("connection", (socket) => {
                                 console.log(data);
                         });
                     });
-
-                    clearInterval(inter);
                 }
             }, 2000);
 

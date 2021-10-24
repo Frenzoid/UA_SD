@@ -13,6 +13,7 @@ function Map(props) {
     let atracciones = [];
     let posAnt;
     let inter;
+    const n = 20;
 
     useEffect(() => {
 
@@ -25,7 +26,6 @@ function Map(props) {
 
         bindSokets();
 
-        const n = 20;
         for (let i = 0; i < n; i++) {
             // Columnas (array vacio).
             matrix[i] = [];
@@ -93,6 +93,66 @@ function Map(props) {
     }
 
     let moverseSiguientePosicion = () => {
+
+        // PARA X:
+        // Destino está a la derecha.
+        if (user.x_actual < user.x_destino) {
+
+            // Si es más corto el tramo de donde estamos hacia el destino, que el tramo circundante, avanzamos.
+            if ((user.x_destino - user.x_actual) < (user.x_actual + n - user.x_destino)) {
+                user.x_actual++;
+
+                // Si es más corto el tramo circundante, que el tramo de donde estamos hacia el destino, retrocedemos.
+            } else if ((user.x_destino - user.x_actual) > (user.x_actual + n - user.x_destino)) {
+                user.x_actual--;
+            }
+
+            // Destino está a la izquierda.
+        } else if (user.x_actual > user.x_destino) {
+
+            // Si es más corto el tramo de donde estamos hacia el destino, que el tramo circundante, retrocedemos.
+            if ((user.x_actual - user.x_destino) < (user.x_destino + n - user.x_actual)) {
+                user.x_actual--;
+
+                // Si es más corto el tramo circundante, que el tramo de donde estamos hacia el destino, avanzamos.
+            } else if ((user.x_actual - user.x_destino) > (user.x_destino + n - user.x_actual)) {
+                user.x_actual++;
+            }
+        }
+
+        //  PARA Y:
+        // Destino está a la derecha.
+        if (user.y_actual < user.y_destino) {
+
+            // Si es más corto el tramo de donde estamos hacia el destino, que el tramo circundante, subimos.
+            if ((user.y_destino - user.y_actual) < (user.y_actual + n - user.y_destino)) {
+                user.y_actual++;
+
+                // Si es más corto el tramo circundante, que el tramo de donde estamos hacia el destino, bajamos.
+            } else if ((user.y_destino - user.y_actual) > (user.y_actual + n - user.y_destino)) {
+                user.y_actual--;
+            }
+
+            // Destino está a la izquierda.
+        } else if (user.y_actual > user.y_destino) {
+
+            // Si es más corto el tramo de donde estamos hacia el destino, que el tramo circundante, bajamos.
+            if ((user.y_actual - user.y_destino) < (user.y_destino + n - user.y_actual)) {
+                user.y_actual--;
+
+                // Si es más corto el tramo circundante, que el tramo de donde estamos hacia el destino, subimos.
+            } else if ((user.y_actual - user.y_destino) > (user.y_destino + n - user.y_actual)) {
+                user.y_actual++;
+            }
+        }
+
+        // Si salta los limites, muevete a la otra zona.
+        if (user.x_actual == n) user.x_actual = 0;
+        if (user.x_actual == -1) user.x_actual = 19;
+        if (user.y_actual == n) user.y_actual = 0;
+        if (user.y_actual == -1) user.y_actual = 19;
+
+        /*
         let x_siguiente, y_siguiente;
 
         if (user.x_actual > user.x_destino)
@@ -108,7 +168,7 @@ function Map(props) {
         else y_siguiente = user.y_actual;
 
         user.x_actual = x_siguiente;
-        user.y_actual = y_siguiente;
+        user.y_actual = y_siguiente;*/
     }
 
     let seleccionaAtraccion = () => {
