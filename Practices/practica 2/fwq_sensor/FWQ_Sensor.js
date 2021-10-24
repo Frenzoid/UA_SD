@@ -19,7 +19,7 @@ const topicsToCreate = [{
 }];
 
 
-let client = new kafka.KafkaClient({ kafkaHost: 'oldbox.cloud:9092' });
+let client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092' });
 
 
 client.createTopics(topicsToCreate, (err, data) => {

@@ -2,11 +2,11 @@
   "name": "fwq_waitingtimeserver",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "FWQ_WaitingTimeServer.js",
   "scripts": {
     "start": "node ./FWQ_WaitingTimeServer.js"
   },
-  "author": "",
+  "author": "Frenzoid & ivansabater",
   "license": "ISC",
   "dependencies": {
     "kafka-node": "^5.0.0",

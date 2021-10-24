@@ -5,9 +5,9 @@
   "main": "FWQ_Sensor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node ./FWQ_Sensor.js" 
+    "start": "node ./FWQ_Sensor.js"
   },
-  "author": "",
+  "author": "Frenzoid & ivansabater",
   "license": "ISC",
   "dependencies": {
     "kafka-node": "^5.0.0"

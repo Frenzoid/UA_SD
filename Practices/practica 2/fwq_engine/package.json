@@ -2,12 +2,12 @@
   "name": "fwq_engine",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "FWQ_Engine.js",
   "scripts": {
-    "start:engine": "node FWQ_Engine.js",
+    "start": "node FWQ_Engine.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Frenzoid & ivansabater",
   "license": "ISC",
   "dependencies": {
     "kafka-node": "^5.0.0",

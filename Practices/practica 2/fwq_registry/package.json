@@ -4,9 +4,9 @@
   "description": "",
   "main": "FWQ_Registry.js",
   "scripts": {
-    "start:registry": "node ./FWQ_Registry.js"
+    "start": "node ./FWQ_Registry.js"
   },
-  "author": "",
+  "author": "Frenzoid & ivansabater",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

@@ -7,6 +7,10 @@ const io = require("socket.io")(httpServer, {
     }
 });
 
+const secret = process.env.SECRET || "ABRACADABRA";
+if (!process.env.SECRET)
+    console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
+
 const topicsToCreate = [{
     topic: 'visitante-rep',
     partitions: 1,
@@ -28,7 +32,7 @@ const topicsToCreate = [{
 
 let payloads = [{ topic: 'visitante-rep', messages: "", partition: 0 }];
 
-io.use(encrypt('ABRACADABRA'));
+io.use(encrypt(secret));
 io.on("connection", (socket) => {
     console.log("Conexión entrante desde", socket.handshake.address);
     let client1 = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });

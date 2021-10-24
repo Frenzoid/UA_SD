@@ -1,8 +1,5 @@
 let kafka = require('kafka-node');
 
-let puertoKafka = 'oldbox.cloud:9092';
-let puerto = process.env.WTPORT || process.argv[2];
-
 const httpServer = require("http").createServer();
 const encrypt = require('socket.io-encrypt')
 const io = require("socket.io")(httpServer, {
@@ -12,7 +9,11 @@ const io = require("socket.io")(httpServer, {
 });
 
 let atracciones = [];
+const secret = process.env.SECRET || "ABRACADABRA";
+if (!process.env.SECRET)
+    console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
 
+const puerto = process.env.WTSPORT || process.argv[2];
 if (!puerto) throw ("Puerto del WTS no está definido.");
 
 const topicsToCreate = [{
@@ -34,7 +35,7 @@ const topicsToCreate = [{
 }];
 
 
-let client = new kafka.KafkaClient({ kafkaHost: puertoKafka, autoConnect: true });
+let client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
 
 client.createTopics(topicsToCreate, (err, data) => {
     if (err)
@@ -56,7 +57,7 @@ consumer.on('message', (message) => {
 
 consumer.on('error', (err) => { console.log(err) })
 
-io.use(encrypt('ABRACADABRA'));
+io.use(encrypt(secret));
 
 io.on('connection', (socket) => {
     console.log("Se ha establecido la conexión con id", socket.id);

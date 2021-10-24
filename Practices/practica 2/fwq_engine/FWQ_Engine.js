@@ -1,10 +1,14 @@
 const aforo = process.env.AFORO || process.argv[2];
 const wtsAddress = process.env.WTSADDRESS || process.argv[3];
+const secret = process.env.SECRET || "ABRACADABRA";
 
 if (!aforo)
     throw ("No se ha especificado el Aforo.");
 else if (!wtsAddress)
     throw ("Direccion de Waiting Time no especificado.");
+
+if (!process.env.SECRET)
+    console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
 
 const sequelize = require('./config/bd-connector');
 const runDBPreparations = require('./config/db-functions');
@@ -92,7 +96,7 @@ async function start() {
         });
 
         const socketClient = io(process.env.WTSADDRESS || process.argv[3], { timeout: 1000, reconnect: true });
-        encrypt('ABRACADABRA')(socketClient);
+        encrypt(secret)(socketClient);
 
         socketClient.on("connect", () => {
             console.log("Engine conectado con WTS");
