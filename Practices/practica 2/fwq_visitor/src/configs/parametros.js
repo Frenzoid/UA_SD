@@ -3,4 +3,6 @@ const KAFKACONTROLLER = process.env.KAFKACONTROLLER || "http://localhost:9111";
 const KAFKAADDRESS = process.env.KAFKAADDRESS || "oldbox.cloud:9092";
 const SECRET = process.env.SECRET || "ABRACADABRA";
 
+console.log({ config: { REGISTRYADDRESS, KAFKAADDRESS, KAFKACONTROLLER, SECRET }});
+
 export { REGISTRYADDRESS, KAFKAADDRESS, KAFKACONTROLLER, SECRET };

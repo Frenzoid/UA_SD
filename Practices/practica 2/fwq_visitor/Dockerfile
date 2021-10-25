@@ -27,4 +27,4 @@ CMD npm run build --production && concurrently "serve -C -s build" "node kafkaCo
 #   docker load < fwq_visitor.tar
 
 # Para arrancar el contenedor
-#   docker run --name fwq_visitor -it -e REGISTRYADDRESS="" -e KAFKACONTROLLER="" -e KAFKAADDRESS="" -p 80:5000 -p 9111:9111 sd:fwq_visitor
+#   docker run --name fwq_visitor -it -e REGISTRYADDRESS="" -e KAFKACONTROLLER="" -e KAFKAADDRESS="" -p 5000:5000 -p 9111:9111 sd:fwq_visitor
