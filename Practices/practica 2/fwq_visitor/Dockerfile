@@ -11,11 +11,12 @@ ENV SECRET=ABRACADABRA
 WORKDIR /app
 
 COPY ./ ./
+RUN chmod +x grabenv.sh
 
 RUN npm install -g serve concurrently
-RUN npm install kafka-node socket.io socket.io-client socket.io-encrypt react-scripts
+RUN yarn install
 
-CMD npm run build --production && concurrently "serve -C -s build" "node kafkaController.js"
+CMD ./grabenv.sh && concurrently "npm start" "node kafkaController.js"
 
 # Para montar la image:
 #   docker build -t sd:fwq_visitor .
