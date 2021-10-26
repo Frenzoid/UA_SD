@@ -9,7 +9,7 @@ ENV SECRET=ABRACADABRA
 
 WORKDIR /app
 
-COPY ./ /app
+COPY ./ ./
 
 RUN npm i
 

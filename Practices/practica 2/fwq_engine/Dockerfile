@@ -9,7 +9,7 @@ ENV KAFKAADDRESS=oldbox.cloud:9092
 
 WORKDIR /app
 
-COPY ./ /app
+COPY ./ ./
 
 RUN npm i
 

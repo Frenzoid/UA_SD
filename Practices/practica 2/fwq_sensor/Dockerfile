@@ -3,12 +3,12 @@ FROM node
 ENV IDATTR=0
 ENV X=14
 ENV Y=3
-# IMAGEN ( Optativo )
+# ENV IMAGEN= ( Optativo )
 ENV KAFKAADDRESS=oldbox.cloud:9092
 
 WORKDIR /app
 
-COPY ./ /app
+COPY ./ ./
 
 RUN npm i
 
