@@ -4,7 +4,10 @@ const { Sequelize } = require('sequelize');
 // const sequelize = new Sequelize('postgres://root:root@oldbox:5432/example') // Example for postgres
 
 // Option 2: Passing parameters separately (database, user, password)
-const sequelize = new Sequelize(process.env.DBNAME || 'parqueatracciones', 'root', 'root',
+const sequelize = new Sequelize(
+    process.env.DBNAME || 'parqueatracciones', 
+    process.env.DBUSER  || 'root',
+    process.env.PASS  || 'root',
     {
         host: process.env.DBADDR || 'oldbox.cloud',
         dialect: 'postgres',

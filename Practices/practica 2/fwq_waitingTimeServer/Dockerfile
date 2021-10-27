@@ -16,10 +16,10 @@ CMD ["npm", "start"]
 #   docker build -t sd:fwq_waitingtimeserver .
 
 # Para exportar la imágen:
-#   docker save sd:fwq_waitingtimeserver > fwq_waitingtimeserver.tar
+#   docker save -o fwq_waitingtimeserver.tar sd:fwq_waitingtimeserver
 
 # Para importar la imágen:
-#   docker load < fwq_waitingtimeserver.tar
+#   docker load -i fwq_waitingtimeserver.tar
 
 # Para arrancar el contenedor, si no se especifican las variables de entorno, se usan los valores por defecto.
 #   docker run --name fwq_waitingtimeserver -it -e WTSPORT="" -e SECRET="" -e KAFKAADDRESS="" sd:fwq_waitingtimeserver
