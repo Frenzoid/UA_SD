@@ -12,6 +12,9 @@ const bindSocketFunctions = require("./controller");
 const puerto = Number(process.env.FWQRPORT || process.argv[2]);
 
 async function start() {
+    if (!process.env.SECRET)
+        console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
+
     if (!puerto)
         throw ("No se ha especificado el puerto.")
 
@@ -24,15 +27,22 @@ async function start() {
         await runDBPreparations();
 
         // Pillamos el aforo, si no hay nada significa que el FWQ_Engine aún no ha arrancado.
-        let aforo = await Aforo.findOne();
+        let aforo;
         while (!aforo) {
-            console.log("Esperando 5s a que FWQ_ENGINE genere AFORO.");
             await sleep(5000);
-            aforo = await Aforo.findOne();
+            try {
+                aforo = await Aforo.findAll({
+                    limit: 1,
+                    order: [['createdAt', 'DESC']]
+                });
+            } catch (err) {
+                console.log("Esperando 5s a que FWQ_ENGINE genere un AFORO.");
+            }
         }
-        aforo = aforo.aforo;
+        aforo = aforo[0].aforo;
+        console.log("Aforo:", aforo);
 
-        io.use(encrypt('ABRACADABRA'));
+        io.use(encrypt(process.env.SECRET || 'ABRACADABRA'));
 
         // Por cada conexion...
         io.on("connection", (socket) => {
