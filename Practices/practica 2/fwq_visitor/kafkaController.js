@@ -7,8 +7,8 @@ const io = require("socket.io")(httpServer, {
     }
 });
 
-const secret = process.env.SECRET || "ABRACADABRA";
-if (!process.env.SECRET)
+const secret = process.env.REACT_APP_SECRET || "ABRACADABRA";
+if (!process.env.REACT_APP_SECRET)
     console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
 
 const topicsToCreate = [{
@@ -35,8 +35,8 @@ let payloads = [{ topic: 'visitante-rep', messages: "", partition: 0 }];
 io.use(encrypt(secret));
 io.on("connection", (socket) => {
     console.log("Conexión entrante desde", socket.handshake.address);
-    let client1 = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
-    let client2 = new kafka.KafkaClient({ kafkaHost: process.env.KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
+    let client1 = new kafka.KafkaClient({ kafkaHost: process.env.REACT_APP_KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
+    let client2 = new kafka.KafkaClient({ kafkaHost: process.env.REACT_APP_KAFKAADDRESS || 'oldbox.cloud:9092', autoConnect: true });
 
     client1.createTopics(topicsToCreate, (err, data) => {
         if (err)
@@ -90,4 +90,4 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(9111);
-console.log("Servidor escuchando en", process.env.KAFKACONTROLLER || "http://localhost:9111");
+console.log("Servidor escuchando en", process.env.REACT_APP_KAFKACONTROLLER || "http://localhost:9111");
