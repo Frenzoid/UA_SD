@@ -1,3 +1,10 @@
+const attrpersontimeintervald = process.env.ATTRPERSONTIMEINTER * 1000 || 2000;
+
+if (!process.env.ATTRPERSONTIMEINTER)
+    console.warn('Advertencia: No se ha especificado un intervalo de emision de personas en una atraccion, usando el valor por defecto, 2s');
+
+
+
 let kafka = require('kafka-node');
 
 const topicsToCreate = [{
@@ -28,6 +35,7 @@ client.createTopics(topicsToCreate, (err, data) => {
   else
     console.log("Topicos creados!", data);
 });
+
 
 
 let producer = new kafka.Producer(client);
@@ -75,7 +83,7 @@ let inter = setInterval(() => {
         console.log(data);
       });
 
-    }, 2000);
+    }, attrpersontimeintervald);
 
   }
 
