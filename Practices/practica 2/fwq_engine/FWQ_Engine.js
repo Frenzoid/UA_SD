@@ -1,11 +1,16 @@
 const aforo = process.env.AFORO || process.argv[2];
 const wtsAddress = process.env.WTSADDRESS || process.argv[3];
 const secret = process.env.SECRET || "ABRACADABRA";
+const attreqtime = process.env.ATTRREQUESTTIME * 1000 || 2000;
 
 if (!aforo)
     throw ("No se ha especificado el Aforo.");
-else if (!wtsAddress)
+
+if (!wtsAddress)
     throw ("Direccion de Waiting Time no especificado.");
+
+if (!process.env.ATTRREQUESTTIME)
+    console.warn('Advertencia: No se ha especificado un intervalo de solicitud de atracciones, usando el valor por defecto, 2s');
 
 if (!process.env.SECRET)
     console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
@@ -111,7 +116,7 @@ async function start() {
                     setInterval(() => {
                         socketClient.emit("solicitar_atracciones");
                         console.log("solcitando atracciones");
-                    }, 2000)
+                    }, attreqtime)
 
                     socketClient.on("atracciones_enviadas", (atracciones) => {
                         console.log("atracciones recibidas", atracciones)
