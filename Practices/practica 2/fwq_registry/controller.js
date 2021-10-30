@@ -7,7 +7,7 @@ let aforoActual = 0;
 function bindSocketFunctions(io, socket, aforo) {
 
     socket.on("autenticar_usuario", async (received) => {
-        if (aforoActual + 1 >= aforo) {
+        if (aforoActual >= aforo) {
             socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
             return;
         } else aforoActual++;
@@ -123,8 +123,13 @@ function bindSocketFunctions(io, socket, aforo) {
     // Usuario sale manualmente.
     socket.on("desautenticar_usuario", async (received) => {
         if (usuarios[socket.id] != undefined) {
+            aforoActual--;
 
             let usr = await User.findByPk(usuarios[socket.id]);
+
+            // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
+            socket.broadcast.emit("usuario_desconectado", usr);
+
             usr.logged = false;
             usr.x_actual = 9;
             usr.y_actual = 9;
@@ -132,7 +137,6 @@ function bindSocketFunctions(io, socket, aforo) {
 
             // Emitimos a usuario actual la desconexion.
             socket.emit("usuarioactual_desautenticado", usr.id)
-            aforoActual--;
 
             console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
         }
@@ -143,14 +147,17 @@ function bindSocketFunctions(io, socket, aforo) {
     // Usuario pierdla conexion.
     socket.on("disconnect", async () => {
         if (usuarios[socket.id] != undefined) {
+            aforoActual--;
 
             let usr = await User.findByPk(usuarios[socket.id]);
+
+            // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
+            io.emit("usuario_desconectado", usr);
+
             usr.logged = false;
             usr.x_actual = 9;
             usr.y_actual = 9;
             usr.save();
-
-            aforoActual--;
         }
 
         console.log("Desconectado:", socket.id, " | Aforo:", aforoActual, "/", aforo)

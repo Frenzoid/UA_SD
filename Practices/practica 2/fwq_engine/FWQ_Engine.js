@@ -74,23 +74,33 @@ async function start() {
 
                 visitanteRepCons.on('message', async (message) => {
                     // {"id":1,"name":"a","password":"","x_actual":3,"y_actual":11,"x_destino":3,"y_destino":3,"logged":true}
-                    let userObject = JSON.parse(message.value);
-                    console.log("Dato recibido de Usuario", userObject);
 
-                    let user = await User.findByPk(userObject.id);
-                    user.x_actual = userObject.x_actual;
-                    user.y_actual = userObject.y_actual;
-                    user.x_destino = userObject.x_destino;
-                    user.y_destino = userObject.y_destino;
-                    await user.save();
+                    try {
+                        let userObject = JSON.parse(message.value);
+                        console.log("Dato recibido de Usuario", userObject);
 
-                    payloadsVisitante[0].messages = JSON.stringify(user);
-                    visitanteEnvProd.send(payloadsVisitante, (err, data) => {
-                        if (err)
-                            console.error("Error!", err)
-                        else
-                            console.log(data);
-                    });
+                        let user = await User.findByPk(userObject.id);
+
+                        if (user.logged) {
+                            user.x_actual = userObject.x_actual;
+                            user.y_actual = userObject.y_actual;
+                            user.x_destino = userObject.x_destino;
+                            user.y_destino = userObject.y_destino;
+                            await user.save();
+
+                            payloadsVisitante[0].messages = JSON.stringify(user);
+                            visitanteEnvProd.send(payloadsVisitante, (err, data) => {
+                                if (err)
+                                    console.error("Error!", err)
+                                else
+                                    console.log(data);
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Error, ignorando", err);
+                        return;
+                    }
+
                 });
 
 
@@ -121,26 +131,34 @@ async function start() {
                     socketClient.on("atracciones_enviadas", (atracciones) => {
                         console.log("atracciones recibidas", atracciones)
                         atracciones.forEach(async (atraccion) => {
-                            if (atraccion && atraccion.id) {
-                                let attr;
-                                attr = await Atraccion.findByPk(atraccion.id);
-                                if (attr) {
-                                    attr.time = atraccion.tiempo;
-                                    attr.coord_x = atraccion.coordX;
-                                    attr.coord_y = atraccion.coordY;
-                                    attr.picture = atraccion.imagen;
-                                    attr.save();
-                                } else {
-                                    attr = await Atraccion.create({
-                                        time: atraccion.tiempo,
-                                        id: atraccion.id,
-                                        picture: atraccion.imagen,
-                                        coord_x: atraccion.coordX,
-                                        coord_y: atraccion.coordY,
-                                    });
+
+                            try {
+
+                                if (atraccion && atraccion.id) {
+                                    let attr;
+                                    attr = await Atraccion.findByPk(atraccion.id);
+                                    if (attr) {
+                                        attr.time = atraccion.tiempo;
+                                        attr.coord_x = atraccion.coordX;
+                                        attr.coord_y = atraccion.coordY;
+                                        attr.picture = atraccion.imagen;
+                                        attr.save();
+                                    } else {
+                                        attr = await Atraccion.create({
+                                            time: atraccion.tiempo,
+                                            id: atraccion.id,
+                                            picture: atraccion.imagen,
+                                            coord_x: atraccion.coordX,
+                                            coord_y: atraccion.coordY,
+                                        });
+                                    }
+                                    console.log(JSON.parse(JSON.stringify(attr)));
                                 }
-                                console.log(JSON.parse(JSON.stringify(attr)));
+
+                            } catch (err) {
+                                console.error("Error, ignorando..", err);
                             }
+
                         });
 
                         payloadsAtraccion[0].messages = JSON.stringify(atracciones);

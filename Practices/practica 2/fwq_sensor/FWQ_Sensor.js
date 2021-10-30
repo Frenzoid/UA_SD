@@ -1,9 +1,7 @@
 const attrpersontimeintervald = process.env.ATTRPERSONTIMEINTER * 1000 || 2000;
 
 if (!process.env.ATTRPERSONTIMEINTER)
-    console.warn('Advertencia: No se ha especificado un intervalo de emision de personas en una atraccion, usando el valor por defecto, 2s');
-
-
+  console.warn('Advertencia: No se ha especificado un intervalo de emision de personas en una atraccion, usando el valor por defecto, 2s');
 
 let kafka = require('kafka-node');
 

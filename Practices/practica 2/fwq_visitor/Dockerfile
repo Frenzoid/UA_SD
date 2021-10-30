@@ -27,4 +27,4 @@ CMD npm run build && concurrently "serve -C -s build" "node kafkaController.js"
 #   docker load -i fwq_visitor.tar
 
 # Para arrancar el contenedor
-#   docker run --name fwq_visitor -it -e REACT_APP_REGISTRYADDRESS="" -e REACT_APP_KAFKACONTROLLER="" -e REACT_APP_KAFKAADDRESS="" -e REACT_APP_SECRET="" -p 5000:5000 -p 9111:9111 sd:fwq_visitor
+#   docker run --name fwq_visitor -it -e REACT_APP_REGISTRYADDRESS="" -e REACT_APP_KAFKACONTROLLER="" -e REACT_APP_KAFKAADDRESS="" -e REACT_APP_SECRET="" -e REACT_APP_VISITORINTERVAL="" -e REACT_APP_SENSORCHECKINTERVAL="" -p 5000:5000 -p 9111:9111 sd:fwq_visitor
