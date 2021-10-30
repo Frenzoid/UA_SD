@@ -257,8 +257,10 @@ function Map(props) {
             attrarr.map((attr) => {
                 if (atracciones[attr.id]) {
 
+                    // Si la atraccion destino supera el tiempo, nos quedamos en el sitio, asi en el siguiente movimiento seleccionamos nueva atraccion.
                     if (attr.coordX == user.x_destino && attr.coordY == user.y_destino && attr.tiempo >= 60) {
-                        seleccionaAtraccion();
+                        user.x_destino = user.x_actual;
+                        user.y_destino = user.y_actual;
                     }
 
                     if (atracciones[attr.id].coordX != attr.coordX || atracciones[attr.id].coordY != attr.coordY) {
@@ -267,9 +269,8 @@ function Map(props) {
                         escribirCasilla(atracciones[attr.id].coordX, atracciones[attr.id].coordY, "");
                     }
 
-                    if (typeof timers[attr.id] == "number") {
+                    if (typeof timers[attr.id] == "number")
                         timers[attr.id]++;
-                    }
                     else
                         timers[attr.id] = 0;
 

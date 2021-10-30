@@ -1,7 +1,7 @@
 const aforo = process.env.AFORO || process.argv[2];
 const wtsAddress = process.env.WTSADDRESS || process.argv[3];
 const secret = process.env.SECRET || "ABRACADABRA";
-const attreqtime = process.env.ATTRREQUESTTIME * 1000 || 2000;
+const attreqtime = Number(process.env.ATTRREQUESTTIME) * 1000 || 2000;
 
 if (!aforo)
     throw ("No se ha especificado el Aforo.");
