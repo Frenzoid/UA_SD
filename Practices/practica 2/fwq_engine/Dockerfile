@@ -1,4 +1,4 @@
-FROM node
+FROM node:16.13.0
 
 ENV WTSADDRESS=http://localhost:9222
 ENV AFORO=10
@@ -27,4 +27,4 @@ CMD ["npm", "start"]
 #   docker load -i fwq_engine.tar
 
 # Para arrancar el contenedor, si no se especifican las variables de entorno, se usan los valores por defecto.
-#   docker run --name fwq_engine -it -e AFORO="" -e SECRET="" -e WTSADDRESS="" -E KAFKAADDRESS="" -e DBNAME="" -e DBADDR="" -e ATTRREQUESTTIME="" sd:fwq_engine
+#   docker run --name fwq_engine -it -e AFORO="" -e SECRET="" -e WTSADDRESS="" -e KAFKAADDRESS="" -e DBNAME="" -e DBADDR="" -e ATTRREQUESTTIME="" sd:fwq_engine

@@ -48,20 +48,20 @@ let imagen = process.env.IMAGEN || process.argv[5];
 if (!id) throw ("Falta la ID de la atraccion");
 
 console.log(coordX, coordY);
-if (!coordX) {
-  throw ("La coordenada X está vacia");
-} else {
-  if (coordX > 20) {
-    throw ("La coordenada X está fuera del mapa");
-  }
+if (!coordX || isNaN(coordX)) {
+  throw ("La coordenada X no es un número");
 }
 
-if (!coordY) {
-  throw ("La coordenada Y está vacia");
-} else {
-  if (coordY > 20) {
-    throw ("La coordenada Y está fuera del mapa");
-  }
+if (coordX > 20) {
+    throw ("La coordenada X está fuera del mapa");
+}
+
+if (!coordY || isNaN(coordY)) {
+  throw ("La coordenada Y no es un número");
+}
+
+if (coordY > 20) {
+  throw ("La coordenada Y está fuera del mapa");
 }
 
 let randomIntFromInterval = (min, max) => {
