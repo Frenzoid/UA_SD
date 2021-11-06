@@ -1,16 +1,12 @@
 const aforo = process.env.AFORO || process.argv[2];
 const wtsAddress = process.env.WTSADDRESS || process.argv[3];
 const secret = process.env.SECRET || "ABRACADABRA";
-const attreqtime = Number(process.env.ATTRREQUESTTIME) * 1000 || 2000;
 
 if (!aforo)
     throw ("No se ha especificado el Aforo.");
 
 if (!wtsAddress)
     throw ("Direccion de Waiting Time no especificado.");
-
-if (!process.env.ATTRREQUESTTIME)
-    console.warn('Advertencia: No se ha especificado un intervalo de solicitud de atracciones, usando el valor por defecto, 2s');
 
 if (!process.env.SECRET)
     console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
@@ -92,8 +88,11 @@ async function start() {
                             visitanteEnvProd.send(payloadsVisitante, (err, data) => {
                                 if (err)
                                     console.error("Error!", err)
-                                else
+                                else {
                                     console.log(data);
+                                    console.log("Atracciones Solicitadas.");
+                                    socketClient.emit("solicitar_atracciones");
+                                }
                             });
                         }
                     } catch (err) {
@@ -122,11 +121,6 @@ async function start() {
                     clearInterval(inter2);
 
                     console.log("Kafka atraccion ready status:", atraccionesEnvProd.ready);
-
-                    setInterval(() => {
-                        socketClient.emit("solicitar_atracciones");
-                        console.log("solcitando atracciones");
-                    }, attreqtime)
 
                     socketClient.on("atracciones_enviadas", (atracciones) => {
                         console.log("atracciones recibidas", atracciones)

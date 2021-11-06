@@ -49,6 +49,7 @@ let consumer = new kafka.Consumer(client, [{ topic: 'attrpersonas', partition: 0
 // Si el waitingTimeServer recibe la información
 consumer.on('message', (message) => {
     let atraccion = JSON.parse(message.value);
+    atraccion.updatedAt = Date.now();
     atraccion.tiempo = 5 * atraccion.personas;
 
     atracciones[atraccion.id] = atraccion;
