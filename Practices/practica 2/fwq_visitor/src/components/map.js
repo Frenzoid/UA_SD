@@ -172,7 +172,7 @@ function Map(props) {
 
     let seleccionaAtraccion = () => {
         let atraccionesFiltradas = atracciones.filter((attr) => {
-            if (attr.tiempo < 60) { return attr }
+            if (attr && attr.tiempo < 60) { return attr }
         });
 
         console.log("Atracciones Filtradas:", atraccionesFiltradas)
