@@ -57,7 +57,7 @@ function Map(props) {
                         colorearCasilla(attr.coordX, attr.coordY, "purple");
                         escribirCasilla(attr.coordX, attr.coordY, attr.tiempo);
                         definirImagenCasilla(attr.coordX, attr.coordY, attr.imagen);
-                        bordearCasilla(attr.coordX, attr.coordY, "")
+                        bordearCasilla(attr.coordX, attr.coordY, "");
 
                         if (attr.tiempo >= 60)
                             bordearCasilla(attr.coordX, attr.coordY, "10px solid red");

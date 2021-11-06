@@ -27,4 +27,4 @@ CMD ["npm", "start"]
 #   docker load -i fwq_registry.tar
 
 # Para arrancar el contenedor
-#   docker run --name fwq_registry -it -e FWQRPORT="" -e DBNAME="" -e DBADDR="" -e SECRET="" -p 9090:9090 sd:fwq_registry
+#   docker run --name fwq_registry -it -e FWQRPORT="" -e DBNAME="" -e DBUSER="" -e DBPASS="" -e DBADDR="" -e SECRET="" -p 9090:9090 sd:fwq_registry

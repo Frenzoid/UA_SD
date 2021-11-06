@@ -7,6 +7,8 @@ ENV REACT_APP_REGISTRYADDRESS=http://localhost:9090
 ENV REACT_APP_KAFKACONTROLLER=http://localhost:9111
 ENV REACT_APP_KAFKAADDRESS=oldbox.cloud:9092
 ENV REACT_APP_SECRET=ABRACADABRA
+ENV REACT_APP_VISITORINTERVAL=0.75
+ENV REACT_APP_SENSORCHECKINTERVAL=5
 
 WORKDIR /app
 
@@ -15,7 +17,7 @@ COPY ./ ./
 RUN npm install -g serve concurrently
 RUN yarn install
 
-CMD npm run build && concurrently "serve -C -s build" "node kafkaController.js"
+CMD npm run build && concurrently "serve -C -p 5000 -s build" "node kafkaController.js"
 
 # Para montar la image:
 #   docker build -t sd:fwq_visitor .
