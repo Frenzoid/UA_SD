@@ -9,6 +9,7 @@ function Edit(props) {
     const [errorMsg, setErrorMsg] = useState("");
 
     const currentUserName = useRef(user.name);
+    let pass2 = "";
 
     useEffect(() => {
         // Si el usuario no esta registrado, no le permitimos acceder a esta página.
@@ -37,6 +38,8 @@ function Edit(props) {
 
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
+        else if (pass2 != user.password)
+            setErrorMsg("Las contraseñas no coinciden.");
         else
             socketRegistry.emit("editar_usuario", user);
     }
@@ -56,7 +59,11 @@ function Edit(props) {
                     </div>
                     <div className="form-check p-0 mb-3">
                         <label>Password</label>
-                        <input value={user.password} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                        <input onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                    </div>
+                    <div className="form-check p-0 mb-3">
+                        <label>Confirm Password</label>
+                        <input onChange={(e) => { pass2 = e.target.value }} className="form-control" placeholder="Confirmar contraseña" type="password"></input>
                     </div>
                     <button onClick={update} className="btn btn-success me-2">
                         Actualizar datos!

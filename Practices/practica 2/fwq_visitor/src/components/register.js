@@ -65,7 +65,7 @@ function Register(props) {
                     </div>
                     <div className="form-check p-0 mb-3">
                         <label>Confirm Password</label>
-                        <input disabled={!socketRegistryConnected ? true : false} onChange={(e) => { pass2 = e.target.value }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                        <input disabled={!socketRegistryConnected ? true : false} onChange={(e) => { pass2 = e.target.value }} className="form-control" placeholder="Confirmar contraseña" type="password"></input>
                     </div>
                     <button onClick={registrarse} disabled={!socketRegistryConnected ? true : false} className="btn btn-success">
                         Registrarse!
