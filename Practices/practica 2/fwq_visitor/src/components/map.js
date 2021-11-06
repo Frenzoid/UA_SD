@@ -39,6 +39,10 @@ function Map(props) {
         renderizarMapa();
 
         inter = setInterval(() => {
+            user.x_actual = Number(user.x_actual);
+            user.y_actual = Number(user.y_actual);
+            user.x_destino = Number(user.x_destino);
+            user.y_destino = Number(user.y_destino);
 
             if (usuarioEstaEnDestino()) {
                 seleccionaAtraccion();
@@ -186,8 +190,8 @@ function Map(props) {
         const attrNum = randomIntFromInterval(0, numAtracciones - 1);
 
         // Provisional
-        user.x_destino = atraccionesFiltradas[attrNum].coordX;
-        user.y_destino = atraccionesFiltradas[attrNum].coordY;
+        user.x_destino = Number(atraccionesFiltradas[attrNum].coordX);
+        user.y_destino = Number(atraccionesFiltradas[attrNum].coordY);
     }
 
 
@@ -234,6 +238,10 @@ function Map(props) {
             escribirCasilla(usr.x_actual, usr.y_actual, usr.name);
 
             usuarios[usr.id] = usr;
+            usuarios[usr.id].x_actual = Number(usuarios[usr.id].x_actual);
+            usuarios[usr.id].y_actual = Number(usuarios[usr.id].y_actual);
+            usuarios[usr.id].x_destino = Number(usuarios[usr.id].x_destino);
+            usuarios[usr.id].y_destino = Number(usuarios[usr.id].y_destino);
 
         });
 
@@ -255,7 +263,7 @@ function Map(props) {
 
         kafkaWebSocket.on("dato_recibido_attr", (attrarr) => {
             attrarr.map((attr) => {
-                if (atracciones[attr.id]) {
+                if (attr && atracciones[attr.id]) {
 
                     // Si la atraccion destino supera el tiempo, nos quedamos en el sitio, asi en el siguiente movimiento seleccionamos nueva atraccion.
                     if (attr.coordX == user.x_destino && attr.coordY == user.y_destino && attr.tiempo >= 60) {

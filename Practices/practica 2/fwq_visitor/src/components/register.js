@@ -8,6 +8,7 @@ function Register(props) {
 
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
+    let pass2 = "";
 
     useEffect(() => {
         // Si el usuario ya esta registrado, no le permitimos acceder a esta página.
@@ -39,6 +40,8 @@ function Register(props) {
 
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
+        else if (pass2 != user.password)
+            setErrorMsg("Las contraseñas no coinciden.");
         else
             socketRegistry.emit("registrar_usuario", user);
     }
@@ -59,6 +62,10 @@ function Register(props) {
                     <div className="form-check p-0 mb-3">
                         <label>Password</label>
                         <input disabled={!socketRegistryConnected ? true : false} onChange={(e) => { setUser({ ...user, password: e.target.value }) }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
+                    </div>
+                    <div className="form-check p-0 mb-3">
+                        <label>Confirm Password</label>
+                        <input disabled={!socketRegistryConnected ? true : false} onChange={(e) => { pass2 = e.target.value }} className="form-control" placeholder="Introduce tu contraseña" type="password"></input>
                     </div>
                     <button onClick={registrarse} disabled={!socketRegistryConnected ? true : false} className="btn btn-success">
                         Registrarse!
