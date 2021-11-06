@@ -22,4 +22,4 @@ CMD ["npm", "start"]
 #   docker load -i fwq_waitingtimeserver.tar
 
 # Para arrancar el contenedor, si no se especifican las variables de entorno, se usan los valores por defecto.
-#   docker run --name fwq_waitingtimeserver -it -e WTSPORT="" -e SECRET="" -e KAFKAADDRESS="" -p 9222:9222 sd:fwq_waitingtimeserver
+#   docker run --name fwq_waitingtimeserver -it -e WTSPORT="" -e SECRET="" -e KAFKAADDRESS="172.20.40.151:9092" -p 9222:9222 sd:fwq_waitingtimeserver
