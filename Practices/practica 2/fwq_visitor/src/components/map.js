@@ -52,6 +52,8 @@ function Map(props) {
                 console.log("Atracciones actuales:", atracciones);
                 atracciones.forEach((attr) => {
                     if (attr && attr.id) {
+                        timers[attr.id]++;
+
                         colorearCasilla(attr.coordX, attr.coordY, "purple");
                         escribirCasilla(attr.coordX, attr.coordY, attr.tiempo);
                         definirImagenCasilla(attr.coordX, attr.coordY, attr.imagen);
@@ -63,7 +65,7 @@ function Map(props) {
                         if (timers[attr.id] && timers[attr.id] >= SENSORCHECKINTERVAL) {
                             colorearCasilla(attr.coordX, attr.coordY, "grey");
                             escribirCasilla(attr.coordX, attr.coordY, `Sensor ${attr.id} off`);
-                            bordearCasilla(attr.coordX, attr.coordY, "")
+                            bordearCasilla(attr.coordX, attr.coordY, "");
                         }
                     }
                 });
@@ -71,6 +73,7 @@ function Map(props) {
 
             actualizarUsuario();
             renderizarMapa();
+
 
         }, VISITORINTERVAL);
 
@@ -228,9 +231,6 @@ function Map(props) {
             else
                 colorearCasilla(usr.x_actual, usr.y_actual, "#AF2908");
 
-            if (usuarioEstaEnDestino())
-                bordearCasilla(usr.x_actual, usr.y_actual, "3px solid black");
-
             escribirCasilla(usr.x_actual, usr.y_actual, usr.name);
 
             usuarios[usr.id] = usr;
@@ -257,8 +257,10 @@ function Map(props) {
             attrarr.map((attr) => {
                 if (atracciones[attr.id]) {
 
+                    // Si la atraccion destino supera el tiempo, nos quedamos en el sitio, asi en el siguiente movimiento seleccionamos nueva atraccion.
                     if (attr.coordX == user.x_destino && attr.coordY == user.y_destino && attr.tiempo >= 60) {
-                        seleccionaAtraccion();
+                        user.x_destino = user.x_actual;
+                        user.y_destino = user.y_actual;
                     }
 
                     if (atracciones[attr.id].coordX != attr.coordX || atracciones[attr.id].coordY != attr.coordY) {
@@ -267,13 +269,7 @@ function Map(props) {
                         escribirCasilla(atracciones[attr.id].coordX, atracciones[attr.id].coordY, "");
                     }
 
-                    if (typeof timers[attr.id] == "number") {
-                        timers[attr.id]++;
-                    }
-                    else
-                        timers[attr.id] = 0;
-
-                    if (atracciones[attr.id].tiempo != attr.tiempo)
+                    if (atracciones[attr.id].updatedAt != attr.updatedAt)
                         timers[attr.id] = 0;
                 }
             });

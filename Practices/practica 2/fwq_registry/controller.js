@@ -133,6 +133,8 @@ function bindSocketFunctions(io, socket, aforo) {
             usr.logged = false;
             usr.x_actual = 9;
             usr.y_actual = 9;
+            usr.y_destino = 9;
+            usr.x_destino = 9;
             usr.save();
 
             // Emitimos a usuario actual la desconexion.
@@ -157,6 +159,8 @@ function bindSocketFunctions(io, socket, aforo) {
             usr.logged = false;
             usr.x_actual = 9;
             usr.y_actual = 9;
+            usr.y_destino = 9;
+            usr.x_destino = 9;
             usr.save();
         }
 
