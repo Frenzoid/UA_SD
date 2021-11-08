@@ -40,12 +40,18 @@ async function start() {
             }
         }
         aforo = aforo[0].aforo;
-        console.log("Aforo:", aforo);
 
         io.use(encrypt(process.env.SECRET || 'ABRACADABRA'));
 
         // Por cada conexion...
-        io.on("connection", (socket) => {
+        io.on("connection", async (socket) => {
+
+            aforo = await Aforo.findAll({
+                limit: 1,
+                order: [['createdAt', 'DESC']]
+            });
+            aforo = aforo[0].aforo;
+            console.log("Aforo máximo:", aforo);
             console.log("Conexion entrante desde direccion:", socket.handshake.address, "con id de sesion:", socket.id);
 
             // Asignamos funcionalidades al socket.
