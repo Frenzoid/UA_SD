@@ -27,4 +27,4 @@ CMD ["npm", "start"]
 #   docker load -i fwq_engine.tar
 
 # Para arrancar el contenedor, si no se especifican las variables de entorno, se usan los valores por defecto.
-#   docker run --name fwq_engine -it -e AFORO="" -e SECRET="" -e WTSADDRESS="" -e KAFKAADDRESS="172.20.40.151:9092" -e DBNAME="pq" -e DBUSER="root" -e DBPASS="root" -e DBADDR="172.20.40.151" -e ATTRREQUESTTIME="2" sd:fwq_engine
+#   docker run --name fwq_engine -it -e AFORO="" -e WTSADDRESS="" -e KAFKAADDRESS="172.20.40.151:9092" -e DBNAME="pq" -e DBUSER="root" -e DBPASS="root" -e DBADDR="172.20.40.151" sd:fwq_engine
