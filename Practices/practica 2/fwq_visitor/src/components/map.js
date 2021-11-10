@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { KafkaClient } from 'kafka-node';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
 import { VISITORINTERVAL, SENSORCHECKINTERVAL } from "../configs/parametros";
 
@@ -302,14 +301,33 @@ function Map(props) {
 
     return (
         <div className="container">
+
+            {user.logged ?
+                <div className="card text-white bg-dark mb-3 text-center mt-4 pt-4">
+                    <div className="card-body">
+                        <h5 className="card-title">
+                            Nombre: {user.name}
+                            &nbsp;&nbsp;
+                            ID: {user.id}
+                        </h5>
+                        <h5 className="card-body">
+                            Siguiente Posición: {user.x_actual}, {user.y_actual}
+                            &nbsp;&nbsp;
+                            Destino: {user.x_destino}, {user.y_destino}
+                        </h5>
+                        <code>
+                            Password: {user.password}
+                            <br />
+                            Logged: {user.logged.toString()}
+                        </code>
+                    </div>
+                </div>
+                : ""}
+
             <div className="text-center my-3">
                 <button onClick={desautenticar} className="btn btn-danger m-2"> Salir del parque.</button>
                 <button onClick={(e) => { e.preventDefault(); history.push("/edit") }} className="btn btn-primary m-2"> Editar usuario.</button>
             </div>
-
-            <code>
-                {JSON.stringify(user)}
-            </code>
 
             {matrix.map((i, ipos) => {
 

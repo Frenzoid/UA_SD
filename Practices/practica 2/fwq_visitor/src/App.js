@@ -20,7 +20,10 @@ function App() {
 
   let bindSokets = () => {
     socketRegistry.on("connect", () => { setSocketConnected(true) });
+    kafkaWebSocket.on("connect", () => { setSocketConnected(true) });
+
     socketRegistry.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") { setUser({}); history.push("/") } });
+    kafkaWebSocket.on("connect_error", () => { setSocketConnected(false); if (history.location.pathname != "/") { setUser({}); history.push("/") } });
   };
 
   return (
@@ -28,7 +31,6 @@ function App() {
 
       <Route path="/map">
         <Map
-          socketRegistryConnected={socketRegistryConnected}
           socketRegistry={socketRegistry}
           kafkaWebSocket={kafkaWebSocket}
           user={user}
@@ -38,7 +40,6 @@ function App() {
 
       <Route path="/edit">
         <Edit
-          socketRegistryConnected={socketRegistryConnected}
           socketRegistry={socketRegistry}
           user={user}
           setUser={setUser}
@@ -47,7 +48,6 @@ function App() {
 
       <Route path="/register">
         <Register
-          socketRegistryConnected={socketRegistryConnected}
           socketRegistry={socketRegistry}
           user={user}
           setUser={setUser}
