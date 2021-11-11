@@ -24,7 +24,7 @@ CMD ["npm", "start"]
 #   docker load -i fwq_sensor.tar
 
 # Para arrancar el contenedor, si no se especifican las variables de entorno, se usan los valores por defecto.
-#   docker run --name fwq_sensor -it -e IDATTR="" -e X="2" -e Y="6" -e KAFKAADDRESS="172.20.40.150:9092" -e ATTRPERSONTIMEINTER="3" -e IMAGEN="https://i.imgur.com/Ff7SEP6.png" sd:fwq_sensor
+#   docker run --name fwq_sensor -it -e IDATTR="0" -e X="2" -e Y="6" -e KAFKAADDRESS="172.20.40.150:9092" -e ATTRPERSONTIMEINTER="3" -e IMAGEN="https://i.imgur.com/Ff7SEP6.png" sd:fwq_sensor
 
 # Imagenes:
 #   https://i.imgur.com/Ff7SEP6.png
