@@ -17,6 +17,7 @@ const runDBPreparations = require('./config/db-functions');
 const kafka = require('kafka-node');
 const io = require("socket.io-client");
 const encrypt = require("socket.io-encrypt");
+const axios = require("axios");
 
 const User = require("./models/user");
 const Atraccion = require("./models/atraccion");
@@ -61,6 +62,9 @@ async function start() {
 
         // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
         await runDBPreparations();
+
+        let city = await axios.get("https://api.openweathermap.org/data/2.5/weather?q=Alicante&appid=d9eee5d3d5d5a86c5868e8c61381983c");
+        console.log(city.data.main.temp);
 
         let inter1 = setInterval(() => {
             if (visitanteEnvProd.ready) {
@@ -146,12 +150,16 @@ async function start() {
                                             coord_y: atraccion.coordY,
                                         });
                                     }
+
+                                    // Hacer aquí la comprobación de temperaturas, si no, entonces: attr.time = 1000;
+
                                     console.log(JSON.parse(JSON.stringify(attr)));
                                 }
 
                             } catch (err) {
                                 console.error("Error, ignorando..", err);
                             }
+
 
                         });
 

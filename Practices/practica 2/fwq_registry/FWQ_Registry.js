@@ -1,7 +1,7 @@
 // npm run start:registry 9090
 const encrypt = require('socket.io-encrypt')
 
-const { server, io } = require("./socket");
+const { server, io, app } = require("./servers");
 const sequelize = require('./config/bd-connector');
 
 const Aforo = require("./models/aforo");
@@ -9,7 +9,11 @@ const Aforo = require("./models/aforo");
 const runDBPreparations = require('./config/db-functions');
 const bindSocketFunctions = require("./controller");
 
+const router = require("./apirest");
+
 const puerto = Number(process.env.FWQRPORT || process.argv[2]);
+
+
 
 async function start() {
     if (!process.env.SECRET)
@@ -41,6 +45,8 @@ async function start() {
         }
         aforo = aforo[0].aforo;
 
+        app.use("/", router);
+
         io.use(encrypt(process.env.SECRET || 'ABRACADABRA'));
 
         // Por cada conexion...
@@ -51,6 +57,7 @@ async function start() {
                 order: [['createdAt', 'DESC']]
             });
             aforo = aforo[0].aforo;
+
             console.log("Aforo máximo:", aforo);
             console.log("Conexion entrante desde direccion:", socket.handshake.address, "con id de sesion:", socket.id);
 
