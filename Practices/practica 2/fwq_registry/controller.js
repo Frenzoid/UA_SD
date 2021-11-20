@@ -17,6 +17,7 @@ function bindSocketFunctions(io, socket, aforo) {
             aforoActual--;
             return;
         }
+
         try {
 
             let usr = await User.findOne({ where: { name: received.name } })
