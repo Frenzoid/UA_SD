@@ -32,6 +32,9 @@ function Map() {
 
                 if (attr.time >= 60)
                     bordearCasilla(attr.coord_x, attr.coord_y, "10px solid red");
+
+                if (attr.time == 1000)
+                    bordearCasilla(attr.coord_x, attr.coord_y, "10px solid yellow");
             });
 
             renderizarMapa();
