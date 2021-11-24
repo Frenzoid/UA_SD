@@ -1,4 +1,5 @@
 const User = require("./models/user");
+const logger = require("./logger");
 
 // Nuestro mapeo de socket => usuarios conectados.
 let usuarios = [];
@@ -11,6 +12,8 @@ function bindSocketFunctions(io, socket, aforo) {
             socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
             return;
         } else aforoActual++;
+
+        logger(req.ip, "autenticar", JSON.stringify(received));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -55,6 +58,8 @@ function bindSocketFunctions(io, socket, aforo) {
     // Registrar usuario.
     socket.on("registrar_usuario", async (received) => {
 
+        logger(req.ip, "registro", JSON.stringify(received));
+
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
             return;
@@ -92,6 +97,9 @@ function bindSocketFunctions(io, socket, aforo) {
 
     // Actualizamos usuario.
     socket.on("editar_usuario", async (received) => {
+
+        logger(req.ip, "editar", JSON.stringify({ userid: usuarios[socket.id], requestbody: received }));
+
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
             return;
@@ -128,6 +136,8 @@ function bindSocketFunctions(io, socket, aforo) {
 
             let usr = await User.findByPk(usuarios[socket.id]);
 
+            logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
+
             // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
             socket.broadcast.emit("usuario_desconectado", usr);
 
@@ -153,6 +163,8 @@ function bindSocketFunctions(io, socket, aforo) {
             aforoActual--;
 
             let usr = await User.findByPk(usuarios[socket.id]);
+
+            logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
 
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
             io.emit("usuario_desconectado", usr);

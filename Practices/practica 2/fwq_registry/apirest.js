@@ -107,7 +107,7 @@ async function registrarUsuario(req, res, next) {
 
 async function editarUsuario(req, res, next) {
     try {
-        logger(req.ip, "editar", JSON.stringify(req.body));
+        logger(req.ip, "editar", JSON.stringify({ userid: req.params.id, requestbody: req.body }));
 
         let received = req.body;
 
@@ -144,7 +144,6 @@ async function editarUsuario(req, res, next) {
 
 async function desuatenticarUsuario(req, res, next) {
     try {
-        logger(req.ip, "desautenticar", req.params.id);
 
         let aforo = await Aforo.findAll({
             limit: 1,
@@ -156,6 +155,7 @@ async function desuatenticarUsuario(req, res, next) {
         aforoActual--;
 
         let usr = await User.findByPk(req.params.id);
+        logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
 
         usr.logged = false;
         usr.x_actual = 9;
