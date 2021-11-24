@@ -63,8 +63,8 @@ async function start() {
         // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
         await runDBPreparations();
 
-        let city = await axios.get("https://api.openweathermap.org/data/2.5/weather?q=Alicante&appid=d9eee5d3d5d5a86c5868e8c61381983c");
-        console.log(city.data.main.temp);
+        // let city = await axios.get("https://api.openweathermap.org/data/2.5/weather?q=Alicante&appid=d9eee5d3d5d5a86c5868e8c61381983c");
+        // console.log(city.data.main.temp);
 
         let inter1 = setInterval(() => {
             if (visitanteEnvProd.ready) {
@@ -114,6 +114,7 @@ async function start() {
         });
 
         const socketClient = io(process.env.WTSADDRESS || process.argv[3], { timeout: 1000, reconnect: true });
+        console.log(process.argv[3])
         encrypt(secret)(socketClient);
 
         socketClient.on("connect", () => {
