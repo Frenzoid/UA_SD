@@ -13,7 +13,6 @@ function bindSocketFunctions(io, socket, aforo) {
             return;
         } else aforoActual++;
 
-        logger(req.ip, "autenticar", JSON.stringify(received));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -24,6 +23,8 @@ function bindSocketFunctions(io, socket, aforo) {
         try {
 
             let usr = await User.findOne({ where: { name: received.name } })
+            logger(req.ip, "autenticar", JSON.stringify(usr));
+
 
             if (!usr) {
                 socket.emit("error_registry", "El usuario no existe!");
@@ -58,7 +59,6 @@ function bindSocketFunctions(io, socket, aforo) {
     // Registrar usuario.
     socket.on("registrar_usuario", async (received) => {
 
-        logger(req.ip, "registro", JSON.stringify(received));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -67,6 +67,8 @@ function bindSocketFunctions(io, socket, aforo) {
 
         try {
             let usrPrev = await User.findAndCountAll({ where: { name: received.name } });
+            logger(req.ip, "registro", JSON.stringify(usrPrev));
+
 
             if (usrPrev.count) {
                 socket.emit("error_registry", "Ya existe un usuario con ese nombre.");
@@ -98,7 +100,6 @@ function bindSocketFunctions(io, socket, aforo) {
     // Actualizamos usuario.
     socket.on("editar_usuario", async (received) => {
 
-        logger(req.ip, "editar", JSON.stringify({ userid: usuarios[socket.id], requestbody: received }));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -117,6 +118,9 @@ function bindSocketFunctions(io, socket, aforo) {
             user.name = received.name;
             user.password = received.password;
             await user.save();
+
+            logger(req.ip, "editar", JSON.stringify({ userid: usuarios[socket.id], requestbody: user }));
+
 
             // Mandamos al cliente el usuario actualizado.
             socket.emit("usuario_editado", user);
