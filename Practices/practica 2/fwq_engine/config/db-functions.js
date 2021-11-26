@@ -15,6 +15,10 @@ async function runDBPreparations() {
 
     await Ciudad.sync({ force: true });
     console.log("Tabla de las ciudades creadas / limpiadas");
+    await Ciudad.create({nombre: "Alicante"})
+    await Ciudad.create({nombre: "Mountain View"})
+    await Ciudad.create({nombre: "London"})
+    await Ciudad.create({nombre: "Moscow"})
 }
 
 module.exports = runDBPreparations;

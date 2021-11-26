@@ -65,13 +65,16 @@ async function start() {
         // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
         await runDBPreparations();
 
-        setInterval(() => {
+        setInterval(async () => {
             ciudadesBaseDatos =  await Ciudad.findAll();
-            
-            ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
-            ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
-            ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
-            ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
+            ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+            ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+            ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+            ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+            ciudadesBaseDatos[0].save();
+            ciudadesBaseDatos[1].save();
+            ciudadesBaseDatos[2].save();
+            ciudadesBaseDatos[3].save();
         }, 2000)
 
 
@@ -194,6 +197,31 @@ async function start() {
 }
 
 function comprobarTemperatura(atraccion, arrayCiudades) {
+    if((atraccion.coordX >= 0 && atraccion.coordX <= 9)|| (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+        if(arrayCiudades[0].temperatura < 20 || arrayCiudades[0].temperatura > 30 ) {
+            return 1000;
+        } else {
+            return atraccion.tiempo;
+        }
+    } else if((atraccion.coordX >= 10 && atraccion.coordX <= 19)|| (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+        if(arrayCiudades[1].temperatura < 20 || arrayCiudades[1].temperatura > 30 ) {
+            return 1000;
+        } else {
+            return atraccion.tiempo;
+        }
+    } else if((atraccion.coordX >= 0 && atraccion.coordX <= 9)|| (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+        if(arrayCiudades[2].temperatura < 20 || arrayCiudades[2].temperatura > 30 ) {
+            return 1000;
+        } else {
+            return atraccion.tiempo;
+        }
+    } else if((atraccion.coordX >= 10 && atraccion.coordX <= 19)|| (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+        if(arrayCiudades[3].temperatura < 20 || arrayCiudades[3].temperatura > 30 ) {
+            return 1000;
+        } else {
+            return atraccion.tiempo;
+        }
+    }
 }
 
 start();
