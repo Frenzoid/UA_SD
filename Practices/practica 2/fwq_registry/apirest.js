@@ -8,7 +8,6 @@ let aforoActual = 0;
 
 async function autenticarUsuario(req, res, next) {
     try {
-        logger(req.ip, "autenticar", JSON.stringify(req.body));
 
         let aforo = await Aforo.findAll({
             limit: 1,
@@ -31,6 +30,8 @@ async function autenticarUsuario(req, res, next) {
         }
 
         let usr = await User.findOne({ where: { name: received.name } })
+        logger(req.ip, "autenticar", JSON.stringify(usr));
+
 
         if (!usr) {
             res.boom.badRequest("El usuario no existe")
@@ -65,7 +66,6 @@ async function autenticarUsuario(req, res, next) {
 
 async function registrarUsuario(req, res, next) {
     try {
-        logger(req.ip, "registro", JSON.stringify(req.body));
 
         let received = req.body;
 
@@ -92,6 +92,9 @@ async function registrarUsuario(req, res, next) {
                 logged: false,
             });
 
+        logger(req.ip, "registro", JSON.stringify(user));
+
+
         // Mandamos al cliente el usuario registrado.
         res.json(user);
         console.log("Usuario", user.id, ":", user.name, "registrado.");
@@ -107,7 +110,6 @@ async function registrarUsuario(req, res, next) {
 
 async function editarUsuario(req, res, next) {
     try {
-        logger(req.ip, "editar", JSON.stringify(req.body));
 
         let received = req.body;
 
@@ -117,6 +119,7 @@ async function editarUsuario(req, res, next) {
         }
 
         let usrPrev = await User.findOne({ where: { name: received.name } });
+        logger(req.ip, "editar", JSON.stringify({ userid: req.params.id, requestbody: usrPrev }));
 
         if (usrPrev && usrPrev.id != req.params.id) {
             res.boom.badRequest("Ya existe un usuario con ese nombre.")
@@ -144,7 +147,6 @@ async function editarUsuario(req, res, next) {
 
 async function desuatenticarUsuario(req, res, next) {
     try {
-        logger(req.ip, "desautenticar", req.params.id);
 
         let aforo = await Aforo.findAll({
             limit: 1,
@@ -156,6 +158,7 @@ async function desuatenticarUsuario(req, res, next) {
         aforoActual--;
 
         let usr = await User.findByPk(req.params.id);
+        logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
 
         usr.logged = false;
         usr.x_actual = 9;

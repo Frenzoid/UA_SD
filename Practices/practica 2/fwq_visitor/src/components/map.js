@@ -53,6 +53,7 @@ function Map(props) {
 
             if (atracciones) {
                 console.log("Atracciones actuales:", atracciones);
+
                 atracciones.forEach((attr) => {
                     if (attr && attr.id) {
                         timers[attr.id]++;
@@ -67,6 +68,9 @@ function Map(props) {
                         
                         if (attr.tiempo == 1000)
                             bordearCasilla(attr.coord_x, attr.coord_y, "10px solid grey");
+
+                        if (attr.time == 1000)
+                            bordearCasilla(attr.coord_x, attr.coord_y, "10px solid yellow");
 
                         if (timers[attr.id] && timers[attr.id] >= SENSORCHECKINTERVAL) {
                             colorearCasilla(attr.coordX, attr.coordY, "grey");
