@@ -64,6 +64,26 @@ app.use(cors());
     });
 
 
+    // POR ACABAR
+    app.get('/cudades', async (req, res) => {
+        try {
+            res.json(await Log.findAll());
+        } catch (err) {
+            console.error("Error!", err);
+            res.boom.badRequest("Error atacando la base de datos");
+        }
+    });
+
+    app.post('/cudad:id', async (req, res) => {
+        try {
+            res.json(await Log.findAll());
+        } catch (err) {
+            console.error("Error!", err);
+            res.boom.badRequest("Error atacando la base de datos");
+        }
+    });
+
+
     app.listen(Number(process.env.APIPORT) || 3003, () => {
         console.log("El servidor está inicializado en el puerto:", Number(process.env.APIPORT) || 3003);
     });
