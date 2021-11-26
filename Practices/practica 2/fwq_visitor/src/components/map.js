@@ -64,6 +64,9 @@ function Map(props) {
 
                         if (attr.tiempo >= 60)
                             bordearCasilla(attr.coordX, attr.coordY, "10px solid red");
+                        
+                        if (attr.tiempo == 1000)
+                            bordearCasilla(attr.coord_x, attr.coord_y, "10px solid grey");
 
                         if (timers[attr.id] && timers[attr.id] >= SENSORCHECKINTERVAL) {
                             colorearCasilla(attr.coordX, attr.coordY, "grey");

@@ -16,12 +16,10 @@ function Map() {
             limpiarMapa();
 
             (await Axios.get(APIENGINE + '/usuarios')).data.forEach(usr => {
-                if (usr.logged == false)
-                    colorearCasilla(usr.x_actual, usr.y_actual, "grey");
-                else
+                if (usr.logged){
                     colorearCasilla(usr.x_actual, usr.y_actual, "#AF2908");
-
-                escribirCasilla(usr.x_actual, usr.y_actual, usr.name);
+                    escribirCasilla(usr.x_actual, usr.y_actual, usr.name);
+                }
             });
 
             (await Axios.get(APIENGINE + '/atracciones')).data.forEach(attr => {
@@ -32,6 +30,9 @@ function Map() {
 
                 if (attr.time >= 60)
                     bordearCasilla(attr.coord_x, attr.coord_y, "10px solid red");
+
+                if (attr.time == 1000)
+                    bordearCasilla(attr.coord_x, attr.coord_y, "10px solid grey");
             });
 
             renderizarMapa();
