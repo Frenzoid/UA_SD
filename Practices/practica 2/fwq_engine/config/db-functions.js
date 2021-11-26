@@ -1,5 +1,6 @@
 const Aforo = require('../models/aforo');
 const Atraccion = require('../models/atraccion');
+const Ciudad = require('../models/ciudad');
 
 async function runDBPreparations() {
 
@@ -10,6 +11,10 @@ async function runDBPreparations() {
 
     await Atraccion.sync({ force: true });
     console.log("Tabla de atracciones creadas / limpiadas");
+
+
+    await Ciudad.sync({ force: true });
+    console.log("Tabla de las ciudades creadas / limpiadas");
 }
 
 module.exports = runDBPreparations;

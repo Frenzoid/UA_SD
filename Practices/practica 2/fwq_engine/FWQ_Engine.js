@@ -21,6 +21,7 @@ const axios = require("axios");
 
 const User = require("./models/user");
 const Atraccion = require("./models/atraccion");
+const Ciudad = require("./models/ciudad");
 
 const topicsToCreate = [{
     topic: 'visitante-rep',
@@ -57,14 +58,22 @@ let visitanteRepCons = new kafka.Consumer(client, [{ topic: 'visitante-rep', par
 async function start() {
     try {
         // Nos logeamos en el servidor de bases de datos.
+        let ciudadesBaseDatos;
         await sequelize.authenticate();
         console.log("Sequelize: Successuflly authenticated.");
 
         // Realizamos las preparaciones previas en la base de datos (crear tablas etc..)
         await runDBPreparations();
 
-        let city = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=Alicante&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
-        console.log(city.main.temp);
+        setInterval(() => {
+            ciudadesBaseDatos =  await Ciudad.findAll();
+            
+            ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
+            ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
+            ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
+            ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c")).data;
+        }, 2000)
+
 
         let inter1 = setInterval(() => {
             if (visitanteEnvProd.ready) {
@@ -137,6 +146,7 @@ async function start() {
                                     let attr;
                                     attr = await Atraccion.findByPk(atraccion.id);
                                     if (attr) {
+                                        atraccion.tiempo = comprobarTemperatura(atraccion, ciudadesBaseDatos);
                                         attr.time = atraccion.tiempo;
                                         attr.coord_x = atraccion.coordX;
                                         attr.coord_y = atraccion.coordY;
@@ -183,5 +193,7 @@ async function start() {
     } catch (err) { console.error(err) }
 }
 
+function comprobarTemperatura(atraccion, arrayCiudades) {
+}
 
 start();
