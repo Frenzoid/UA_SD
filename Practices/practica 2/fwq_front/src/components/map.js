@@ -7,11 +7,6 @@ function Map() {
 
     useEffect(() => {
 
-        // Generamos un mapa vacio.
-
-        limpiarMapa();
-        renderizarMapa();
-
         const inter = setInterval(async () => {
             limpiarMapa();
 
@@ -84,39 +79,45 @@ function Map() {
     return (
         <div className="container">
 
-            {matrix.map((i, ipos) => {
+            { matrix.length == 0 ?
+            <div className="text-center">
+                <img src={"https://i.imgur.com/6Hq8096.gif"} className="mx-auto" />
+            </div>
+                : matrix.map((i, ipos) => {
 
-                return (
-                    <div key={ipos} className="d-flex flex-row no-wrap justify-content-center">
+                    return (
+                        <div key={ipos} className="d-flex flex-row no-wrap justify-content-center">
 
-                        {i.map((j, jpos) => {
+                            {i.map((j, jpos) => {
 
-                            return (
-                                <div
-                                    style={{
-                                        minWidth: "60px",
-                                        minHeight: "60px",
-                                        textAlign: "center",
-                                        color: "white",
-                                        backgroundColor: matrix[ipos][jpos].color,
-                                        border: matrix[ipos][jpos].border,
-                                    }}
-                                    className="card m-1"
-                                    key={ipos + ", " + jpos}
-                                >
-                                    {matrix[ipos][jpos].picture ?
-                                        <img src={matrix[ipos][jpos].picture} alt="salida" className="mx-auto" style={{ maxHeight: "60%", maxWidth: "60%" }} /> :
-                                        ""
-                                    }
-                                    {matrix[ipos][jpos].value}
-                                </div>
-                            )
-                        })}
+                                return (
+                                    <div
+                                        style={{
+                                            minWidth: "60px",
+                                            minHeight: "60px",
+                                            textAlign: "center",
+                                            color: "white",
+                                            backgroundColor: matrix[ipos][jpos].color,
+                                            border: matrix[ipos][jpos].border,
+                                        }}
+                                        className="card m-1"
+                                        key={ipos + ", " + jpos}
+                                    >
+                                        {matrix[ipos][jpos].picture ?
+                                            <img src={matrix[ipos][jpos].picture} alt="salida" className="mx-auto" style={{ maxHeight: "60%", maxWidth: "60%" }} /> :
+                                            ""
+                                        }
+                                        {matrix[ipos][jpos].value}
+                                    </div>
+                                )
+                            })}
 
-                    </div>
-                )
+                        </div>
+                    )
 
-            })}
+                })
+            }
+            
         </div>
     )
 
