@@ -65,12 +65,16 @@ function Map(props) {
 
                         if (attr.tiempo >= 60)
                             bordearCasilla(attr.coordX, attr.coordY, "10px solid red");
-                        
-                        if (attr.tiempo == 1000)
-                            bordearCasilla(attr.coord_x, attr.coord_y, "10px solid grey");
 
-                        if (attr.time == 1000)
-                            bordearCasilla(attr.coord_x, attr.coord_y, "10px solid yellow");
+                        if (attr.tiempo == 1000) {
+                            bordearCasilla(attr.coordX, attr.coordY, "10px solid grey");
+                            escribirCasilla(attr.coordX, attr.coordY, "Mala tmp.");
+                        }
+
+                        if (attr.time == 1000) {
+                            bordearCasilla(attr.coordX, attr.coordY, "10px solid yellow");
+                            escribirCasilla(attr.coordX, attr.coordY, "Mala tmp.");
+                        }
 
                         if (timers[attr.id] && timers[attr.id] >= SENSORCHECKINTERVAL) {
                             colorearCasilla(attr.coordX, attr.coordY, "grey");

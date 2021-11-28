@@ -66,16 +66,17 @@ async function start() {
         await runDBPreparations();
 
         setInterval(async () => {
-            ciudadesBaseDatos =  await Ciudad.findAll();
+            ciudadesBaseDatos = await Ciudad.findAll({ limit: 4, order: [['id', 'ASC']] });
             ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
             ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
             ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
             ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+
             ciudadesBaseDatos[0].save();
             ciudadesBaseDatos[1].save();
             ciudadesBaseDatos[2].save();
             ciudadesBaseDatos[3].save();
-        }, 2000)
+        }, 5000)
 
 
         let inter1 = setInterval(() => {
@@ -139,35 +140,32 @@ async function start() {
 
                     console.log("Kafka atraccion ready status:", atraccionesEnvProd.ready);
 
-                    socketClient.on("atracciones_enviadas", (atracciones) => {
+                    socketClient.on("atracciones_enviadas", async (atracciones) => {
                         console.log("atracciones recibidas", atracciones)
-                        atracciones.forEach(async (atraccion) => {
+                        atracciones.map((atraccion) => {
 
                             try {
 
                                 if (atraccion && atraccion.id) {
-                                    let attr;
-                                    attr = await Atraccion.findByPk(atraccion.id);
-                                    if (attr) {
-                                        atraccion.tiempo = comprobarTemperatura(atraccion, ciudadesBaseDatos);
-                                        attr.time = atraccion.tiempo;
-                                        attr.coord_x = atraccion.coordX;
-                                        attr.coord_y = atraccion.coordY;
-                                        attr.picture = atraccion.imagen;
-                                        attr.save();
-                                    } else {
-                                        attr = await Atraccion.create({
-                                            time: atraccion.tiempo,
-                                            id: atraccion.id,
-                                            picture: atraccion.imagen,
-                                            coord_x: atraccion.coordX,
-                                            coord_y: atraccion.coordY,
-                                        });
-                                    }
+                                    atraccion.tiempo = comprobarTemperatura(atraccion, ciudadesBaseDatos);
+                                    Atraccion.findByPk(atraccion.id).then(async (attr) => {
 
-                                    // Hacer aquí la comprobación de temperaturas, si no, entonces: attr.time = 1000;
-
-                                    console.log(JSON.parse(JSON.stringify(attr)));
+                                        if (attr) {
+                                            attr.time = atraccion.tiempo;
+                                            attr.coord_x = atraccion.coordX;
+                                            attr.coord_y = atraccion.coordY;
+                                            attr.picture = atraccion.imagen;
+                                            attr.save();
+                                        } else {
+                                            attr = await Atraccion.create({
+                                                time: atraccion.tiempo,
+                                                id: atraccion.id,
+                                                picture: atraccion.imagen,
+                                                coord_x: atraccion.coordX,
+                                                coord_y: atraccion.coordY,
+                                            });
+                                        }
+                                    });
                                 }
 
                             } catch (err) {
@@ -177,6 +175,7 @@ async function start() {
 
                         });
 
+                        console.log(atracciones);
                         payloadsAtraccion[0].messages = JSON.stringify(atracciones);
                         atraccionesEnvProd.send(payloadsAtraccion, (err, data) => {
                             if (err)
@@ -197,26 +196,26 @@ async function start() {
 }
 
 function comprobarTemperatura(atraccion, arrayCiudades) {
-    if((atraccion.coordX >= 0 && atraccion.coordX <= 9)|| (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
-        if(arrayCiudades[0].temperatura < 20 || arrayCiudades[0].temperatura > 30 ) {
+    if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+        if (arrayCiudades[0].temperatura < 20 || arrayCiudades[0].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;
         }
-    } else if((atraccion.coordX >= 10 && atraccion.coordX <= 19)|| (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
-        if(arrayCiudades[1].temperatura < 20 || arrayCiudades[1].temperatura > 30 ) {
+    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+        if (arrayCiudades[1].temperatura < 20 || arrayCiudades[1].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;
         }
-    } else if((atraccion.coordX >= 0 && atraccion.coordX <= 9)|| (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
-        if(arrayCiudades[2].temperatura < 20 || arrayCiudades[2].temperatura > 30 ) {
+    } else if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+        if (arrayCiudades[2].temperatura < 20 || arrayCiudades[2].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;
         }
-    } else if((atraccion.coordX >= 10 && atraccion.coordX <= 19)|| (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
-        if(arrayCiudades[3].temperatura < 20 || arrayCiudades[3].temperatura > 30 ) {
+    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+        if (arrayCiudades[3].temperatura < 20 || arrayCiudades[3].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;

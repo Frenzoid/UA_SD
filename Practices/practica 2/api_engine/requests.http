@@ -15,3 +15,9 @@ GET http://localhost:3003/logs
 Content-Type: application/json
 
 {}
+
+### Ciudades.
+POST http://localhost:3003/ciudades:5
+Content-Type: application/json
+
+{}

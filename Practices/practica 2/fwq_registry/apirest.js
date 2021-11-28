@@ -18,6 +18,8 @@ async function autenticarUsuario(req, res, next) {
 
         let received = req.body;
 
+        logger(req.ip, "autenticar", JSON.stringify(received));
+
         if (aforoActual >= aforo) {
             res.boom.badRequest("Se ha alcanzado el aforo máximo!")
             return;
@@ -30,7 +32,6 @@ async function autenticarUsuario(req, res, next) {
         }
 
         let usr = await User.findOne({ where: { name: received.name } })
-        logger(req.ip, "autenticar", JSON.stringify(usr));
 
 
         if (!usr) {
@@ -69,12 +70,15 @@ async function registrarUsuario(req, res, next) {
 
         let received = req.body;
 
+        logger(req.ip, "registro", JSON.stringify(received));
+
         if (!received.name || !received.password) {
             res.boom.badRequest("Faltan datos!")
             return;
         }
 
         let usrPrev = await User.findAndCountAll({ where: { name: received.name } });
+
 
         if (usrPrev.count) {
             res.boom.badRequest("Ya existe un usuario con ese nombre.")
@@ -92,7 +96,6 @@ async function registrarUsuario(req, res, next) {
                 logged: false,
             });
 
-        logger(req.ip, "registro", JSON.stringify(user));
 
 
         // Mandamos al cliente el usuario registrado.
@@ -113,13 +116,14 @@ async function editarUsuario(req, res, next) {
 
         let received = req.body;
 
+        logger(req.ip, "editar", JSON.stringify({ userid: req.params.id, requestbody: received }));
+
         if (!received.name || !received.password) {
             res.boom.badRequest("Faltan datos!")
             return;
         }
 
         let usrPrev = await User.findOne({ where: { name: received.name } });
-        logger(req.ip, "editar", JSON.stringify({ userid: req.params.id, requestbody: usrPrev }));
 
         if (usrPrev && usrPrev.id != req.params.id) {
             res.boom.badRequest("Ya existe un usuario con ese nombre.")

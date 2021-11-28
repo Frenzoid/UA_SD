@@ -8,6 +8,8 @@ let aforoActual = 0;
 function bindSocketFunctions(io, socket, aforo) {
 
     socket.on("autenticar_usuario", async (received) => {
+        logger(socket.handshake.address, "autenticar", JSON.stringify(received));
+
         if (aforoActual >= aforo) {
             socket.emit("error_registry", "Se ha alcanzado el aforo máximo!");
             return;
@@ -23,7 +25,6 @@ function bindSocketFunctions(io, socket, aforo) {
         try {
 
             let usr = await User.findOne({ where: { name: received.name } })
-            logger(req.ip, "autenticar", JSON.stringify(usr));
 
 
             if (!usr) {
@@ -58,7 +59,7 @@ function bindSocketFunctions(io, socket, aforo) {
 
     // Registrar usuario.
     socket.on("registrar_usuario", async (received) => {
-
+        logger(socket.handshake.address, "autenticar", JSON.stringify(received));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -67,7 +68,6 @@ function bindSocketFunctions(io, socket, aforo) {
 
         try {
             let usrPrev = await User.findAndCountAll({ where: { name: received.name } });
-            logger(req.ip, "registro", JSON.stringify(usrPrev));
 
 
             if (usrPrev.count) {
@@ -100,6 +100,7 @@ function bindSocketFunctions(io, socket, aforo) {
     // Actualizamos usuario.
     socket.on("editar_usuario", async (received) => {
 
+        logger(socket.handshake.address, "editar", JSON.stringify({ userid: usuarios[socket.id], requestbody: received }));
 
         if (!received.name || !received.password) {
             socket.emit("error_registry", "Faltan datos!");
@@ -119,9 +120,6 @@ function bindSocketFunctions(io, socket, aforo) {
             user.password = received.password;
             await user.save();
 
-            logger(req.ip, "editar", JSON.stringify({ userid: usuarios[socket.id], requestbody: user }));
-
-
             // Mandamos al cliente el usuario actualizado.
             socket.emit("usuario_editado", user);
             console.log("Usuario", user.id, ":", received.name, "actualizado.", JSON.parse(JSON.stringify(user)));
@@ -140,7 +138,7 @@ function bindSocketFunctions(io, socket, aforo) {
 
             let usr = await User.findByPk(usuarios[socket.id]);
 
-            logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
+            logger(socket.handshake.address, "desautenticar", JSON.stringify({ user: usr }));
 
             // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
             socket.broadcast.emit("usuario_desconectado", usr);
@@ -168,7 +166,7 @@ function bindSocketFunctions(io, socket, aforo) {
 
             let usr = await User.findByPk(usuarios[socket.id]);
 
-            logger(req.ip, "desautenticar", JSON.stringify({ user: usr }));
+            logger(socket.handshake.address, "desautenticar", JSON.stringify({ user: usr }));
 
             // Emitimos a TODOS que X usuario se ha desconectado, para borrarlo del mapa.
             io.emit("usuario_desconectado", usr);

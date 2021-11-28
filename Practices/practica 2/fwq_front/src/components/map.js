@@ -11,7 +11,7 @@ function Map() {
             limpiarMapa();
 
             (await Axios.get(APIENGINE + '/usuarios')).data.forEach(usr => {
-                if (usr.logged){
+                if (usr.logged) {
                     colorearCasilla(usr.x_actual, usr.y_actual, "#AF2908");
                     escribirCasilla(usr.x_actual, usr.y_actual, usr.name);
                 }
@@ -26,8 +26,10 @@ function Map() {
                 if (attr.time >= 60)
                     bordearCasilla(attr.coord_x, attr.coord_y, "10px solid red");
 
-                if (attr.time == 1000)
+                if (attr.time == 1000) {
                     bordearCasilla(attr.coord_x, attr.coord_y, "10px solid grey");
+                    escribirCasilla(attr.coord_x, attr.coord_y, "Mala tmp.");
+                }
             });
 
             renderizarMapa();
@@ -79,10 +81,10 @@ function Map() {
     return (
         <div className="container">
 
-            { matrix.length == 0 ?
-            <div className="text-center">
-                <img src={"https://i.imgur.com/6Hq8096.gif"} className="mx-auto" />
-            </div>
+            {matrix.length == 0 ?
+                <div className="text-center">
+                    <img src={"https://i.imgur.com/6Hq8096.gif"} className="mx-auto" />
+                </div>
                 : matrix.map((i, ipos) => {
 
                     return (
@@ -117,7 +119,7 @@ function Map() {
 
                 })
             }
-            
+
         </div>
     )
 

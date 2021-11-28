@@ -6,6 +6,7 @@ const cors = require('cors');
 const User = require("./models/user");
 const Atraccion = require("./models/atraccion");
 const Log = require('./models/log');
+const Ciudad = require('./models/ciudad');
 
 const sequelize = require('./config/bd-connector');
 const runDBPreparations = require('./config/db-functions');
@@ -65,18 +66,34 @@ app.use(cors());
 
 
     // POR ACABAR
-    app.get('/cudades', async (req, res) => {
+    app.get('/ciudades', async (req, res) => {
         try {
-            res.json(await Log.findAll());
+            res.json(await Ciudad.findAll({ limit: 4, order: [['id', 'ASC']] }));
         } catch (err) {
             console.error("Error!", err);
             res.boom.badRequest("Error atacando la base de datos");
         }
     });
 
-    app.post('/cudad:id', async (req, res) => {
+    app.post('/ciudades:id', async (req, res) => {
         try {
-            res.json(await Log.findAll());
+            let ciudad = await Ciudad.findByPk(req.params.id);
+            ciudad.nombre = req.body.nombre;
+            await ciudad.save();
+            res.json(ciudad);
+        } catch (err) {
+            console.error("Error!", err);
+            res.boom.badRequest("Error atacando la base de datos");
+        }
+    });
+
+    app.get('/limpiarlogs', async (req, res) => {
+        try {
+            await Log.destroy({
+                where: {},
+                truncate: true
+            });
+            res.json("Limpieza completada");
         } catch (err) {
             console.error("Error!", err);
             res.boom.badRequest("Error atacando la base de datos");
