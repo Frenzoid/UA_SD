@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
+import { REGISTRYADDRESS } from '../configs/parametros';
+import * as Axios from "axios";
 
 function Login(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
     const socketRegistryConnected = props.socketRegistryConnected;
+    const method = props.method;
 
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
@@ -40,7 +43,19 @@ function Login(props) {
         if (!user.name || !user.password)
             setErrorMsg("Faltan datos!");
         else
-            socketRegistry.emit("autenticar_usuario", user);
+            if (method == "rest") {
+                Axios.post(REGISTRYADDRESS + '/auth',
+                    user, { timeout: 1000 }
+                ).then((response) => {
+                    setUser(response.data);
+                    history.push("/map");
+                }).catch((err) => {
+                    console.log(err);
+                    setErrorMsg(err.response.data.message);
+                });
+            } else if (method == "sockets") {
+                socketRegistry.emit("autenticar_usuario", user);
+            }
     }
 
 

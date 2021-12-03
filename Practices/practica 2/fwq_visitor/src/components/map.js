@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { VISITORINTERVAL, SENSORCHECKINTERVAL } from "../configs/parametros";
+import { VISITORINTERVAL, SENSORCHECKINTERVAL, REGISTRYADDRESS } from "../configs/parametros";
+import * as Axios from "axios";
 
 function Map(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
     const kafkaWebSocket = props.kafkaWebSocket;
+    const method = props.method;
 
     const [user, setUser] = [props.user, props.setUser];
     const [matrix, setMatrix] = useState([]);
@@ -305,6 +307,9 @@ function Map(props) {
     let desautenticar = (e = null) => {
         if (e)
             e.preventDefault();
+        if (method == "rest") {
+            Axios.get(REGISTRYADDRESS + "/logoff/" + user.id);
+        }
 
         socketRegistry.emit("desautenticar_usuario", user);
     }

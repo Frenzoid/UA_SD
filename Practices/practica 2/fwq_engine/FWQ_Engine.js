@@ -67,15 +67,19 @@ async function start() {
 
         setInterval(async () => {
             ciudadesBaseDatos = await Ciudad.findAll({ limit: 4, order: [['id', 'ASC']] });
-            ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-            ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-            ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-            ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+            try {
+                ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+                ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+                ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+                ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
 
-            ciudadesBaseDatos[0].save();
-            ciudadesBaseDatos[1].save();
-            ciudadesBaseDatos[2].save();
-            ciudadesBaseDatos[3].save();
+                ciudadesBaseDatos[0].save();
+                ciudadesBaseDatos[1].save();
+                ciudadesBaseDatos[2].save();
+                ciudadesBaseDatos[3].save();
+            } catch (error) {
+                console.error(error);
+            }
         }, 5000)
 
 

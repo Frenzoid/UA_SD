@@ -5,7 +5,7 @@ import * as Axios from "axios"
 function Ciudades() {
     const [ciudades, setCiudades] = useState(null);
     const [ciudad, setCiudad] = useState({ id: 0, nombre: '' });
-    const [error, setError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
     useEffect(() => {
         const inter = setInterval(async () => {
@@ -20,16 +20,12 @@ function Ciudades() {
 
     let cambiarCiudad = async () => {
         Axios.post(APIENGINE + '/ciudades' + ciudad.id,
-            {
-                nombre: ciudad.nombre,
-            }
-        ).then(function (response) {
-            if (response.data.error)
-                setError(response.data.error);
-            else
-                setError(false);
-        }).catch(function (err) {
-            setError(err);
+            { nombre: ciudad.nombre }, { timeout: 1000 }
+        ).then((response) => {
+            setErrorMsg("");
+        }).catch((err) => {
+            console.log(err);
+            setErrorMsg(err.response.data.message);
         });
     }
 
@@ -79,12 +75,11 @@ function Ciudades() {
                     <button onClick={(e) => { e.preventDefault(); cambiarCiudad(); }} className="btn btn-primary">Actualizar</button>
                 </div>
             </form>
-            {error ?
+            {!errorMsg ? "" :
                 <div style={{ width: "100%" }} className="card card-header bg-danger text-white text-center mt-3">
-                    {error}
+                    {errorMsg}
                 </div>
-                :
-                ""}
+            }
         </div>
     )
 }
