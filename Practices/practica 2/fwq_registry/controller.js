@@ -133,30 +133,26 @@ function bindSocketFunctions(io, socket, aforo) {
 
     // Usuario sale manualmente.
     socket.on("desautenticar_usuario", async (received) => {
-        if (usuarios[socket.id] != undefined) {
-            aforoActual--;
+        aforoActual--;
 
-            let usr = await User.findByPk(usuarios[socket.id]);
+        let usr = await User.findByPk(usuarios[socket.id] || received.id);
 
-            logger(socket.handshake.address, "desautenticar", JSON.stringify({ user: usr }));
+        logger(socket.handshake.address, "desautenticar", JSON.stringify({ user: usr }));
 
-            // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
-            socket.broadcast.emit("usuario_desconectado", usr);
+        // Emitimos a todos menos a si mismo que el usuario se ha desconectado, para borrarlo del mapa.
+        socket.broadcast.emit("usuario_desconectado", usr);
 
-            usr.logged = false;
-            usr.x_actual = 9;
-            usr.y_actual = 9;
-            usr.y_destino = 9;
-            usr.x_destino = 9;
-            usr.save();
+        usr.logged = false;
+        usr.x_actual = 9;
+        usr.y_actual = 9;
+        usr.y_destino = 9;
+        usr.x_destino = 9;
+        usr.save();
 
-            // Emitimos a usuario actual la desconexion.
-            socket.emit("usuarioactual_desautenticado", usr.id)
+        // Emitimos a usuario actual la desconexion.
+        socket.emit("usuarioactual_desautenticado", usr.id)
 
-            console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
-        }
-        else
-            console.error("error_registry", "Usuario a desautenticar no tiene una sesion definida.");
+        console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
     });
 
     // Usuario pierdla conexion.

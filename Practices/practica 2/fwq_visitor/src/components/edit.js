@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from "react-router-dom";
+import { REGISTRYADDRESS } from '../configs/parametros';
+import * as Axios from "axios";
 
 function Edit(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
+    const method = props.method;
 
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
@@ -41,7 +44,19 @@ function Edit(props) {
         else if (pass2 != user.password)
             setErrorMsg("Las contraseñas no coinciden.");
         else
-            socketRegistry.emit("editar_usuario", user);
+            if (method == "rest") {
+                Axios.put(REGISTRYADDRESS + '/edit/' + user.id,
+                    user, { timeout: 1000 }
+                ).then((response) => {
+                    setUser(response.data);
+                    history.push("/");
+                }).catch((err) => {
+                    console.log(err);
+                    setErrorMsg(err.response.data.message);
+                });
+            } else if (method == "sockets") {
+                socketRegistry.emit("editar_usuario", user);
+            }
     }
 
 

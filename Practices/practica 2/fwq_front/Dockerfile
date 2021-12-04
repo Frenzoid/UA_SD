@@ -2,7 +2,7 @@ FROM node:16.13.0
 
 EXPOSE 5000
 
-ENV REACT_APP_APIENGINE=http://localhost:3000
+ENV REACT_APP_APIENGINE=http://localhost:3003
 ENV REACT_APP_REQUESTTIME=3
 
 WORKDIR /app
@@ -24,4 +24,4 @@ CMD npm run build && serve -C -p 5000 -s build
 #   docker load -i fwq_front.tar
 
 # Para arrancar el contenedor:
-#   docker run --name fwq_front -it -e REACT_APP_APIENGINE="http://localhost:3000" -p 5000:5000 sd:fwq_front
+#   docker run --name fwq_front -it -e REACT_APP_APIENGINE="http://localhost:3003" -p 5000:5000 sd:fwq_front
