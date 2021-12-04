@@ -4,12 +4,6 @@ const User = require("./models/user");
 const Aforo = require("./models/aforo");
 const logger = require("./logger");
 
-const AesEncryption = require('aes-encryption')
-
-const aes = new AesEncryption()
-const secretAES = process.env.SECRETAES || '11122233344455566677788822244455555555555555555231231321313aaaff'
-aes.setSecretKey(secretAES)
-
 let aforoActual = 0;
 
 async function autenticarUsuario(req, res, next) {
@@ -55,7 +49,7 @@ async function autenticarUsuario(req, res, next) {
         usr.logged = true;
         await usr.save();
 
-        res.send(aes.encrypt(JSON.stringify(usr)));
+        res.json(usr);
 
         console.log("Usuario", usr.name, "autenticado | Aforo:", aforoActual, "/", aforo);
 
@@ -105,7 +99,7 @@ async function registrarUsuario(req, res, next) {
 
 
         // Mandamos al cliente el usuario registrado.
-        res.send(aes.encrypt(JSON.stringify(usr)));
+        res.json(user);
         console.log("Usuario", user.id, ":", user.name, "registrado.");
 
         return;
@@ -142,7 +136,8 @@ async function editarUsuario(req, res, next) {
         await user.save();
 
         // Mandamos al cliente el usuario actualizado.
-        res.send(aes.encrypt(JSON.stringify(usr)));
+        res.json(user);
+
         console.log("Usuario", user.id, ":", received.name, "actualizado.", JSON.parse(JSON.stringify(user)));
 
         return;
@@ -177,7 +172,7 @@ async function desuatenticarUsuario(req, res, next) {
         usr.save();
 
         // Emitimos a usuario actual la desconexion.
-        res.send(aes.encrypt(JSON.stringify(usr.id)));
+        res.json(usr.id);
 
         console.log("Desautenticado:", usr.name, " | Aforo:", aforoActual, "/", aforo);
 

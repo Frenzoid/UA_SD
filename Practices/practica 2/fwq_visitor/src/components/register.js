@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { REGISTRYADDRESS, SECRETAES } from '../configs/parametros';
+import { REGISTRYADDRESS } from '../configs/parametros';
 import * as Axios from "axios";
-
-import * as AesEncryption from 'aes-encryption'
 
 function Register(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
     const method = props.method;
-    let aes;
 
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
@@ -20,11 +17,9 @@ function Register(props) {
         if (user.logged)
             history.push("/map");
 
-        aes = new AesEncryption()
-        aes.setSecretKey(SECRETAES)
         bindSokets();
 
-        return () => { unbindSockets();}
+        return () => { unbindSockets(); }
 
     }, []);
 
@@ -54,7 +49,7 @@ function Register(props) {
                 Axios.post(REGISTRYADDRESS + '/register',
                     user, { timeout: 1000 }
                 ).then((response) => {
-                    setUser(JSON.parse(aes.decrypt(response.data)));
+                    setUser(response.data);
                     history.push("/");
                 }).catch((err) => {
                     console.log(err);
