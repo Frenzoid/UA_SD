@@ -11,6 +11,10 @@ const Ciudad = require('./models/ciudad');
 const sequelize = require('./config/bd-connector');
 const runDBPreparations = require('./config/db-functions');
 
+const puerto = Number(process.env.APIPORT || process.argv[2]);
+
+if (!puerto)
+    throw ("No se ha especificado el puerto.")
 
 const app = express();
 
@@ -101,8 +105,8 @@ app.use(cors());
     });
 
 
-    app.listen(Number(process.env.APIPORT) || 3003, () => {
-        console.log("El servidor está inicializado en el puerto:", Number(process.env.APIPORT) || 3003);
+    app.listen(Number(puerto), () => {
+        console.log("El servidor está inicializado en el puerto:", puerto);
     });
 
 })();

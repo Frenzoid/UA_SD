@@ -1,11 +1,16 @@
 const kafka = require('kafka-node');
 const httpServer = require("http").createServer();
+const AesEncryption = require('aes-encryption')
 const encrypt = require('socket.io-encrypt')
 const io = require("socket.io")(httpServer, {
     cors: {
         origin: "*",
     }
 });
+
+const aes = new AesEncryption()
+const secretAES = process.env.REACT_APP_SECRETAES || '11122233344455566677788822244455555555555555555231231321313aaaff'
+aes.setSecretKey(secretAES)
 
 const secret = process.env.REACT_APP_SECRET || "ABRACADABRA";
 if (!process.env.REACT_APP_SECRET)
@@ -70,12 +75,12 @@ client1.createTopics(topicsToCreate, (err, data) => {
 
         atraccionCli.on('message', (message) => {
             console.log("Dato recibido de Atracciones", message.value);
-            io.emit("dato_recibido_attr", JSON.parse(message.value));
+            io.emit("dato_recibido_attr", JSON.parse(aes.decrypt(message.value)));
         });
 
         visitanteCliEnv.on('message', (message) => {
             console.log("Dato recibido de Usuario", message.value);
-            io.emit("dato_recibido_usr", JSON.parse(message.value));
+            io.emit("dato_recibido_usr", JSON.parse(aes.decrypt(message.value)));
         });
 
         visitanteRepProd.on("error", (err) => console.error(err));

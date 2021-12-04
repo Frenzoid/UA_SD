@@ -111,7 +111,7 @@ async function start() {
                             user.y_destino = userObject.y_destino;
                             await user.save();
 
-                            payloadsVisitante[0].messages = JSON.stringify(user);
+                            payloadsVisitante[0].messages = aes.encrypt(JSON.stringify(user));
                             visitanteEnvProd.send(payloadsVisitante, (err, data) => {
                                 if (err)
                                     console.error("Error!", err)
@@ -186,7 +186,7 @@ async function start() {
                         });
 
                         console.log(atracciones);
-                        payloadsAtraccion[0].messages = JSON.stringify(atracciones);
+                        payloadsAtraccion[0].messages = aes.encrypt(JSON.stringify(atracciones));
                         atraccionesEnvProd.send(payloadsAtraccion, (err, data) => {
                             if (err)
                                 console.error("Error!", err)
@@ -212,13 +212,13 @@ function comprobarTemperatura(atraccion, arrayCiudades) {
         } else {
             return atraccion.tiempo;
         }
-    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
         if (arrayCiudades[1].temperatura < 20 || arrayCiudades[1].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;
         }
-    } else if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+    } else if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
         if (arrayCiudades[2].temperatura < 20 || arrayCiudades[2].temperatura > 30) {
             return 1000;
         } else {
