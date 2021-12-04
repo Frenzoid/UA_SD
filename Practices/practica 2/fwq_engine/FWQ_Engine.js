@@ -1,6 +1,12 @@
 const aforo = process.env.AFORO || process.argv[2];
 const wtsAddress = process.env.WTSADDRESS || process.argv[3];
 const secret = process.env.SECRET || "ABRACADABRA";
+// Creo que también va aqui
+const AesEncryption = require('aes-encryption')
+
+const aes = new AesEncryption()
+const secretAES = process.env.SECRETAES || '11122233344455566677788822244455555555555555555231231321313aaaff'
+aes.setSecretKey(secretAES)
 
 if (!aforo)
     throw ("No se ha especificado el Aforo.");
@@ -202,13 +208,13 @@ function comprobarTemperatura(atraccion, arrayCiudades) {
         } else {
             return atraccion.tiempo;
         }
-    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
+    } else if ((atraccion.coordX >= 10 && atraccion.coordX <= 19) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
         if (arrayCiudades[1].temperatura < 20 || arrayCiudades[1].temperatura > 30) {
             return 1000;
         } else {
             return atraccion.tiempo;
         }
-    } else if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 10 && atraccion.coordY <= 19)) {
+    } else if ((atraccion.coordX >= 0 && atraccion.coordX <= 9) && (atraccion.coordY >= 0 && atraccion.coordY <= 9)) {
         if (arrayCiudades[2].temperatura < 20 || arrayCiudades[2].temperatura > 30) {
             return 1000;
         } else {
