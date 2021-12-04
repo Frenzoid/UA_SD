@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { REGISTRYADDRESS } from '../configs/parametros';
+import { REGISTRYADDRESS, SECRETAES } from '../configs/parametros';
 import * as Axios from "axios";
 
+import * as AesEncryption from 'aes-encryption'
 function Login(props) {
     const history = useHistory();
     const socketRegistry = props.socketRegistry;
     const socketRegistryConnected = props.socketRegistryConnected;
     const method = props.method;
-
+    let aes;
     const [user, setUser] = [props.user, props.setUser];
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -16,7 +17,9 @@ function Login(props) {
         // Si el usuario ya esta registrado, no le permitimos acceder a esta página.
         if (user.logged && socketRegistryConnected)
             history.push("/map");
-
+        aes = new AesEncryption()
+        aes.setSecretKey(SECRETAES)
+        bindSokets();
         bindSokets();
 
         return () => { unbindSockets(); }
@@ -47,7 +50,7 @@ function Login(props) {
                 Axios.post(REGISTRYADDRESS + '/auth',
                     user, { timeout: 1000 }
                 ).then((response) => {
-                    setUser(response.data);
+                    setUser(JSON.parse(aes.decrypt(response.data)));
                     history.push("/map");
                 }).catch((err) => {
                     console.log(err);
