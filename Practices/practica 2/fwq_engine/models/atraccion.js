@@ -13,7 +13,7 @@ const Atraccion = sequelize.define('atraccion', {
     picture: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique: true
+        unique: false
     },
     coord_x: {
         type: Sequelize.STRING,
