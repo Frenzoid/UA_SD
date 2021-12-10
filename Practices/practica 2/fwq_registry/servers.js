@@ -25,7 +25,7 @@ const http = require('http')
     cert: fs.readFileSync('certs/server.cert')
 }, 
 */
-const server = http.createServer(app);
+const server = http.createServer({}, app);
 
 const io = require("socket.io")(server, {
     cors: { origin: "*", }
