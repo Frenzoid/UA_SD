@@ -13,7 +13,7 @@ const secret = process.env.SECRET || "ABRACADABRA";
 if (!process.env.SECRET)
     console.warn("Advertencia: No se ha especificado un Secret, usando el valor por defecto.");
 
-const puerto = process.env.WTSPORT || process.argv[2];
+const puerto = Number(process.env.WTSPORT || process.argv[2]);
 if (!puerto) throw ("Puerto del WTS no está definido.");
 
 const topicsToCreate = [{

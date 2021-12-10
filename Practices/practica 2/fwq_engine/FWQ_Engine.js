@@ -137,7 +137,7 @@ async function start() {
         });
 
         const socketClient = io(process.env.WTSADDRESS || process.argv[3], { timeout: 1000, reconnect: true });
-        console.log(process.argv[3])
+        console.log(process.env.WTSADDRESS || process.argv[3]);
         encrypt(secret)(socketClient);
 
         socketClient.on("connect", () => {

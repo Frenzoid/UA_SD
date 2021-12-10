@@ -18,11 +18,14 @@ app.use(logger("dev"));
 // Enable cors
 app.use(cors());
 
-const https = require('https')
-const server = https.createServer({
+const http = require('http')
+/*
+{
     key: fs.readFileSync('certs/server.key'),
     cert: fs.readFileSync('certs/server.cert')
-}, app);
+}, 
+*/
+const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
     cors: { origin: "*", }

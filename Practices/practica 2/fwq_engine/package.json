@@ -10,6 +10,7 @@
   "author": "Frenzoid & ivansabater",
   "license": "ISC",
   "dependencies": {
+    "aes-encryption": "^1.0.4",
     "axios": "^0.24.0",
     "kafka-node": "^5.0.0",
     "pg": "^8.7.1",
