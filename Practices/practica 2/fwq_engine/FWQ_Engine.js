@@ -6,7 +6,7 @@ const AesEncryption = require('aes-encryption')
 
 const aes = new AesEncryption()
 const secretAES = process.env.SECRETAES || '11122233344455566677788822244455555555555555555231231321313aaaff'
-const APIKEY = process.env.APIKEY || "d9eee5d3d5d5a86c5868e8c61381983"
+const APIKEY = process.env.APIKEY || "d9eee5d3d5d5a86c5868e8c61381983c"
 aes.setSecretKey(secretAES)
 
 if (!aforo)
