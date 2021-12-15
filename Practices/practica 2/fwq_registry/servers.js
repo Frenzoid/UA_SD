@@ -18,11 +18,11 @@ app.use(logger("dev"));
 // Enable cors
 app.use(cors());
 
-const https = require('http')
+const https = require('https')
 
 const server = https.createServer({
-        key: fs.readFileSync('/app/certs/server.key'),
-        cert: fs.readFileSync('/app/certs/server.cert')
+        key: fs.readFileSync('certs/server.key'),
+        cert: fs.readFileSync('certs/server.cert')
     }, 
 app);
 
