@@ -8,6 +8,7 @@ ENV DBNAME=parqueatracciones
 ENV DBUSER=root
 ENV DBPASS=root
 ENV DBADDR=oldbox.cloud
+ENV APIKEY="d9eee5d3d5d5a86c5868e8c61381983"
 ENV KAFKAADDRESS=oldbox.cloud:9092
 
 WORKDIR /app

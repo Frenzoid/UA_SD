@@ -6,6 +6,7 @@ const AesEncryption = require('aes-encryption')
 
 const aes = new AesEncryption()
 const secretAES = process.env.SECRETAES || '11122233344455566677788822244455555555555555555231231321313aaaff'
+const APIKEY = process.env.APIKEY || "d9eee5d3d5d5a86c5868e8c61381983"
 aes.setSecretKey(secretAES)
 
 if (!aforo)
@@ -74,10 +75,10 @@ async function start() {
         setInterval(async () => {
             ciudadesBaseDatos = await Ciudad.findAll({ limit: 4, order: [['id', 'ASC']] });
             try {
-                ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-                ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-                ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
-                ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=d9eee5d3d5d5a86c5868e8c61381983c&units=metric")).data.main.temp;
+                ciudadesBaseDatos[0].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[0].nombre + "&appid=" + APIKEY + "&units=metric")).data.main.temp;
+                ciudadesBaseDatos[1].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[1].nombre + "&appid=" + APIKEY + "&units=metric")).data.main.temp;
+                ciudadesBaseDatos[2].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[2].nombre + "&appid=" + APIKEY + "&units=metric")).data.main.temp;
+                ciudadesBaseDatos[3].temperatura = (await axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + ciudadesBaseDatos[3].nombre + "&appid=" + APIKEY + "&units=metric")).data.main.temp;
 
                 ciudadesBaseDatos[0].save();
                 ciudadesBaseDatos[1].save();
