@@ -22,7 +22,7 @@ const https = require('http')
 
 const server = https.createServer({
         key: fs.readFileSync('/app/certs/server.key'),
-        cert: fs.readFileSync('/appcerts/server.cert')
+        cert: fs.readFileSync('/app/certs/server.cert')
     }, 
 app);
 
